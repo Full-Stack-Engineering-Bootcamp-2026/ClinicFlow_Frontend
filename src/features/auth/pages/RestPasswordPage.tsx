@@ -1,7 +1,8 @@
 import AuthLayout from "../components/AuthLayout"
+import ResetPasswordForm from "../components/ResetPasswordForm"
 
 
-function RestPassword() {
+function RestPasswordPage() {
   return (
     <AuthLayout
       pageTitle="Reset Password"
@@ -9,9 +10,9 @@ function RestPassword() {
       subtitle="Enter your new password below"
       backTo="/login"
     >
-      <div>Form</div>
+      <ResetPasswordForm/>
     </AuthLayout>
   )
 }
 
-export default RestPassword
+export default RestPasswordPage

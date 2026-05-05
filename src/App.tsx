@@ -1,12 +1,13 @@
 import LoginPage from "./features/auth/pages/LoginPage"
 import ForgotPasswordPage from "./features/auth/pages/ForgotPasswordPage"
-import RestPassword from "./features/auth/pages/RestPassword"
+import RestPasswordPage from "./features/auth/pages/RestPasswordPage"
+
 
 export function App() {
   return (
-    <LoginPage/>
+    //<LoginPage/>
     //<ForgotPasswordPage/>
-    //<RestPassword/>
+    <RestPasswordPage/>
   )
 }
 

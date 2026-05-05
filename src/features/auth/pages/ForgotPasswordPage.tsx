@@ -1,4 +1,5 @@
 import AuthLayout from "../components/AuthLayout"
+import ForgotPasswordForm from "../components/ForgotPasswordForm"
 
 function ForgotPasswordPage() {
   return (
@@ -9,7 +10,7 @@ function ForgotPasswordPage() {
       backTo="/login"
       backLabel="Go back to login"
     >
-      <div>Form</div>
+      <ForgotPasswordForm/>
     </AuthLayout>
   )
 }

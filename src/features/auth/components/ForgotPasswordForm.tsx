@@ -2,23 +2,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-const loginSchema = z.object({
+const forgotSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type ForgotFormData = z.infer<typeof forgotSchema>;
 
-export default function LoginForm() {
+export default function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<ForgotFormData>({
+    resolver: zodResolver(forgotSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = (data: ForgotFormData) => {
     console.log(data);
   };
 
@@ -40,27 +39,11 @@ export default function LoginForm() {
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          Password
-        </label>
-        <input
-          type="password"
-          {...register("password")}
-          className="w-full border border-border rounded-md px-3 py-2 text-sm bg-background"
-        />
-        {errors.password && (
-          <p className="text-red-500 text-xs mt-1">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
-
       <button
         type="submit"
         className="w-full bg-primary text-primary-foreground py-2 rounded-md hover:opacity-90 transition"
       >
-        Login
+        Send Reset Link
       </button>
     </form>
   );
