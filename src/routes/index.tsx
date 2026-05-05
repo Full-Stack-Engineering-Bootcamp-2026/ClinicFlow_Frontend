@@ -6,6 +6,7 @@ import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import UnProtectedRoute from "./UnProtectedRoute";
+import ProtectedHome from "@/features/auth/components/ProtectedHome";
 
 export const router = createBrowserRouter([
   {
@@ -37,7 +38,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <ProtectedRoute>
-        <div>Main Layout Placeholder</div>
+        <ProtectedHome/>
       </ProtectedRoute>
     ),
   },
