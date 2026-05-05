@@ -1,10 +1,15 @@
 
-function LoginPage() {
-  return (
-    <div>
-      Login 
-    </div>
-  )
-}
+import AuthLayout from "../components/AuthLayout";
+import LoginForm from "../components/LoginForm";
 
-export default LoginPage
+export default function LoginPage() {
+  return (
+    <AuthLayout
+      title="Login"
+      subtitle="Enter your credentials to continue"
+      pageTitle="User Login"
+    >
+      <LoginForm/>
+    </AuthLayout>
+  );
+}
