@@ -14,7 +14,7 @@ export default function AppLayout() {
         <AppSidebar />
 
    
-        <SidebarInset className="flex flex-col min-h-screen">
+        <SidebarInset className="flex flex-col min-h-screen ">
 
           
           <div className="sticky top-0 z-50">
@@ -22,7 +22,7 @@ export default function AppLayout() {
           </div>
 
         
-          <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 bg-muted">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 bg-background">
             <Outlet />
           </main>
 

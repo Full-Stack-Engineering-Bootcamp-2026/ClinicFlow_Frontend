@@ -32,7 +32,7 @@ export default function LoginForm() {
         JSON.stringify({
           name: "Raj",
           email: data.email,
-          role: "ADMIN",
+          role: "NURSE",
           officialRole: "Manager",
         })
       ) +
