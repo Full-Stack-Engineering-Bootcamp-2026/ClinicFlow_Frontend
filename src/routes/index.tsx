@@ -6,7 +6,7 @@ import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import UnProtectedRoute from "./UnProtectedRoute";
-import ProtectedHome from "@/features/auth/components/ProtectedHome";
+import AppLayout from "@/components/layout/AppLayout";
 
 export const router = createBrowserRouter([
   {
@@ -36,10 +36,23 @@ export const router = createBrowserRouter([
 
   {
     path: "/",
-    element: (
-      <ProtectedRoute>
-        <ProtectedHome/>
-      </ProtectedRoute>
-    ),
+    element:
+        <ProtectedRoute>
+        <AppLayout />
+        </ProtectedRoute>,
+    children: [
+      {
+        index: true,
+        element: <div>Dashboard</div>, 
+      },
+      {
+        path: "patients",
+        element: <div>Patients Page</div>,
+      },
+      {
+        path: "appointments",
+        element: <div>Appointments Page</div>,
+      },
+    ],
   },
 ]);
