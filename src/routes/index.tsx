@@ -6,7 +6,7 @@ import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import UnProtectedRoute from "./UnProtectedRoute";
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayout from "@/layouts/AppLayout";
 
 export const router = createBrowserRouter([
   {

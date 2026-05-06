@@ -4,7 +4,7 @@ import type { AuthState, AuthUser } from "./types";
 
 interface JwtPayload {
   name: string;
-  email: string;
+  subject: string;
   role: "NURSE" | "DOCTOR" | "ADMIN";
   officialRole?: string;
 }
@@ -26,7 +26,7 @@ const authSlice = createSlice({
       state.token = token;
       state.user = {
         name: decoded.name,
-        email: decoded.email,
+        email: decoded.subject,
         role: decoded.role,
         officialRole: decoded.officialRole,
       };
