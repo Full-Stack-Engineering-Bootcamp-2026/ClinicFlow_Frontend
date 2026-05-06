@@ -5,30 +5,28 @@ import { Bell, Settings } from "lucide-react";
 
 export function Navbar() {
     return (
-        <div className="h-14 flex items-center justify-between px-4 border-b bg-background">
+        <div className="h-14 flex items-center justify-between px-4  bg-card">
 
            
-            <div className="flex items-center gap-3">
-                <SidebarTrigger />
+            <div className="flex items-center gap-3 ">
+                <SidebarTrigger className="cursor-pointer"/>
 
-                <h1 className="text-lg font-semibold">
-                    Live Queue
-                </h1>
+                
             </div>
 
           
             <div className="flex items-center gap-4">
 
              
-                <button className="p-2 rounded-md hover:bg-muted transition">
+                <button className="p-2 rounded-md hover:bg-muted transition cursor-pointer">
                     <Bell className="h-4 w-4 text-muted-foreground" />
                 </button>
 
-                <button className="p-2 rounded-md hover:bg-muted transition">
+                <button className="p-2 rounded-md hover:bg-muted transition cursor-pointer">
                     <Settings className="h-4 w-4 text-muted-foreground" />
                 </button>
 
-                {/* User Info */}
+                
                 <div className="flex items-center gap-2">
                     <div className="text-right leading-tight">
                         <p className="text-xs font-medium">Dr. Sarah Jenkins</p>
