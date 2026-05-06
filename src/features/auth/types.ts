@@ -13,3 +13,17 @@ export interface LoginFormData {
   email: string;
   password: string;
 }
+
+export type UserRole = "NURSE" | "DOCTOR" | "ADMIN";
+
+export interface AuthUser {
+  name: string;
+  email: string;
+  role: UserRole;
+  officialRole?: string;
+}
+
+export interface AuthState {
+  token: string | null;
+  user: AuthUser | null;
+}
