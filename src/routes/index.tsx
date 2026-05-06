@@ -43,7 +43,9 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <div>Dashboard</div>, 
+        element: <div>Dashboard
+          
+        </div>, 
       },
       {
         path: "patients",
