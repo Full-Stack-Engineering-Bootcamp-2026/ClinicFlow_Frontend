@@ -12,8 +12,12 @@ import {
 
 import { useSidebar } from "@/components/ui/sidebar"
 
-import { Home, Users, Calendar, LogOut } from "lucide-react"
+import { LogOut } from "lucide-react"
 
+import { useSelector } from "react-redux"
+import type { RootState } from "@/app/store"
+
+import { sidebarItems } from "@/layouts/sidebarItems"
 import { CiMedicalCase } from "react-icons/ci"
 
 import { NavLink } from "react-router-dom"
@@ -25,6 +29,9 @@ import type { AppDispatch } from "@/app/store"
 import { logout } from "@/features/auth/authSlice"
 
 export function AppSidebar() {
+  const role = useSelector((state: RootState) => state.auth.user?.role)
+
+  const menuItems = role ? sidebarItems[role] : []
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
@@ -33,7 +40,7 @@ export function AppSidebar() {
     navigate("/login")
   }
 
-  const { state , setOpenMobile} = useSidebar()
+  const { state, setOpenMobile } = useSidebar()
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 bg-card">
@@ -55,70 +62,38 @@ export function AppSidebar() {
         </span>
       </SidebarHeader>
 
-      <SidebarContent className="bg-card px-2 py-2">
+      <SidebarContent className="bg-card px-2 pt-4 pb-2">
         <SidebarMenu className="space-y-1">
-          <SidebarMenuItem>
-            <NavLink to="/" end>
-              {({ isActive }) => (
-                <SidebarMenuButton
-                  tooltip="Dashboard"
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  } `}
-                  onClick={() => setOpenMobile(false)}
-                >
-                  <Home className="h-4 w-4 shrink-0" />
-                  <span>Dashboard</span>
-                </SidebarMenuButton>
-              )}
-            </NavLink>
-          </SidebarMenuItem>
+          {menuItems.map((item) => {
+            const Icon = item.icon
 
-          <SidebarMenuItem>
-            <NavLink to="/patients">
-              {({ isActive }) => (
-                <SidebarMenuButton
-                  tooltip="Patients"
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  } `}
-                  onClick={() => setOpenMobile(false)}
-                >
-                  <Users className="h-4 w-4 shrink-0" />
-                  <span>Patients</span>
-                </SidebarMenuButton>
-              )}
-            </NavLink>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem>
-            <NavLink to="/appointments">
-              {({ isActive }) => (
-                <SidebarMenuButton
-                  tooltip="Appointments"
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  } `}
-                  onClick={() => setOpenMobile(false)}
-                >
-                  <Calendar className="h-4 w-4 shrink-0" />
-                  <span>Appointments</span>
-                </SidebarMenuButton>
-              )}
-            </NavLink>
-          </SidebarMenuItem>
+            return (
+              <SidebarMenuItem key={item.path}>
+                <NavLink to={item.path} end={item.path === "/"}>
+                  {({ isActive }) => (
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                        isActive
+                          ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      } `}
+                      onClick={() => setOpenMobile(false)}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  )}
+                </NavLink>
+              </SidebarMenuItem>
+            )
+          })}
         </SidebarMenu>
       </SidebarContent>
 
       <SidebarFooter className="bg-card px-2 py-2">
         <button
-          className="flex w-full items-center cursor-pointer gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-red-50 hover:text-red-500"
+          className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-red-50 hover:text-red-500"
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4 shrink-0" />
