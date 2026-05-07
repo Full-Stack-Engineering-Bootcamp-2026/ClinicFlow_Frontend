@@ -69,3 +69,25 @@ export type BookingSummaryCardProps = {
 
   onCancel?: () => void
 }
+
+export type AppointmentSuccessDialogProps = {
+  open: boolean
+
+  onOpenChange: (
+    open: boolean
+  ) => void
+
+  queueNumber: string
+
+  appointmentId: string
+
+  patientName: string
+
+  doctorName: string
+
+  appointmentDate: string
+
+  visitType: string
+
+  onGoToQueue: () => void
+}

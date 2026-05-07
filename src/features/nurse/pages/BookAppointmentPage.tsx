@@ -2,8 +2,10 @@ import PatientSearchCard from "../components/PatientSearchCard"
 import PatientCard from "../components/PatientCard"
 import AppointmentDetailsCard from "../components/AppointmentDetailsCard"
 import BookingSummaryCard from "../components/BookingSummaryCard"
+import AppointmentSuccessDialog from "../components/AppointmentSuccessDialog"
 import { useEffect, useState } from "react"
 import type { Doctor } from "../types"
+import { X } from "lucide-react"
 
 export default function BookAppointmentPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -16,6 +18,23 @@ export default function BookAppointmentPage() {
 
   const [doctors, setDoctors] = useState<Doctor[]>([])
 
+  const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
+
+  const [bookingError, setBookingError] = useState("")
+
+  const handleConfirmBooking = () => {
+    const shouldFail = true
+
+    if (shouldFail) {
+      setBookingError("Doctor queue is full for the selected date")
+
+      return
+    }
+
+    setBookingError("")
+
+    setOpenSuccessDialog(true)
+  }
   useEffect(() => {
     setDoctors([
       {
@@ -30,7 +49,6 @@ export default function BookAppointmentPage() {
         id: "3",
         name: "Dr. Michael Jones",
       },
-      
     ])
   }, [])
   const patients = [
@@ -78,6 +96,22 @@ export default function BookAppointmentPage() {
     },
   ]
   return (
+    <>
+  {bookingError && (
+    <div className="mb-4 rounded-2xl bg-red-50 p-4 shadow-sm">
+      
+      <div className="flex items-center gap-3">
+        
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500">
+          <X className="h-5 w-5 text-white" />
+        </div>
+
+        <p className="text-sm font-medium text-red-600">
+          {bookingError}
+        </p>
+      </div>
+    </div>
+  )}
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
       <div className="space-y-6 lg:col-span-8">
         <PatientSearchCard value={searchTerm} onChange={setSearchTerm} />
@@ -114,9 +148,24 @@ export default function BookAppointmentPage() {
             doctorName="Dr. Sarah Williams"
             visitType="Standard Consultation"
             appointmentDate="2026-05-08"
+            onConfirm={handleConfirmBooking}
           />
         </div>
       </div>
+      <AppointmentSuccessDialog
+        open={openSuccessDialog}
+        onOpenChange={setOpenSuccessDialog}
+        queueNumber="A-12"
+        appointmentId="APT-1023"
+        patientName="Emma Watson"
+        doctorName="Dr. Sarah Williams"
+        appointmentDate="2026-05-08"
+        visitType="Standard Consultation"
+        onGoToQueue={() => {
+          setOpenSuccessDialog(false)
+        }}
+      />
     </div>
+    </>
   )
 }
