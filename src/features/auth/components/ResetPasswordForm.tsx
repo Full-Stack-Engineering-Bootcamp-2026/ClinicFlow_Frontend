@@ -4,7 +4,7 @@ import { z } from "zod"
 import { useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
-import { resetPasswordApi } from "../api/authApi"
+import { resetPasswordApi } from "../services/authApi"
 
 const resetSchema = z
   .object({

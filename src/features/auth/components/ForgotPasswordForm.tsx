@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { forgotPasswordApi } from "../api/authApi"
+import { forgotPasswordApi } from "../services/authApi"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 

@@ -1,4 +1,4 @@
-import type { AuthLayoutProps } from "../types";
+import type { AuthLayoutProps } from "../types/types";
 import { CiMedicalCase } from "react-icons/ci";
 import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "react-router-dom";

@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/store"
 import { Link, useNavigate } from "react-router-dom"
 import { setAuth } from "../authSlice"
-import { loginApi } from "../api/authApi"
+import { loginApi } from "../services/authApi"
 import { useState } from "react"
 
 const loginSchema = z.object({
