@@ -9,6 +9,8 @@ import UnProtectedRoute from "./UnProtectedRoute";
 import AppLayout from "@/layouts/AppLayout";
 import DashboardPage from "@/features/admin/pages/DashboardPage";
 import StaffManagementPage from "@/features/admin/pages/StaffManagementPage";
+import ManageSchedulePage from "@/features/admin/pages/ManageSchedulePage";
+
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +60,10 @@ export const router = createBrowserRouter([
       {
         path: "staff-management",
         element: <StaffManagementPage />,
+      },
+      {
+        path: "doctor-schedules",
+        element: <ManageSchedulePage />,
       },
     ],
   },

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-
+import { Link } from "react-router-dom"
 import AddStaffDialog from "./AddStaffDialog"
 
 export default function QuickActions() {
@@ -13,9 +13,14 @@ export default function QuickActions() {
         }
       />
 
-      <Button variant="outline">
-        Manage Schedules
-      </Button>
+      <Button
+  asChild
+  variant="outline"
+>
+  <Link to="/doctor-schedules">
+    Manage Schedules
+  </Link>
+</Button>
     </div>
   )
 }
