@@ -2,13 +2,7 @@ import { Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
-type PatientSearchCardProps = {
-  value: string
-
-  onChange: (value: string) => void
-
-  onSearch?: () => void
-}
+import type { PatientSearchCardProps } from "../types"
 
 export default function PatientSearchCard({
   value,

@@ -1,20 +1,9 @@
 import { Check } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import type { PatientCardProps } from "../types"
 
-type PatientCardProps = {
-  fullName: string
-  patientId: string
-  phoneNumber: string
 
-  isReturning: boolean
-
-  selected?: boolean
-
-  onSelect?: () => void
-
-  onViewHistory?: () => void
-}
 
 export default function PatientCard({
   fullName,

@@ -2,10 +2,37 @@ import PatientSearchCard from "../components/PatientSearchCard"
 import PatientCard from "../components/PatientCard"
 import AppointmentDetailsCard from "../components/AppointmentDetailsCard"
 import BookingSummaryCard from "../components/BookingSummaryCard"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import type { Doctor } from "../types"
 
 export default function BookAppointmentPage() {
   const [searchTerm, setSearchTerm] = useState("")
+
+  const [doctor, setDoctor] = useState("")
+
+  const [visitType, setVisitType] = useState("")
+
+  const [appointmentDate, setAppointmentDate] = useState("")
+
+  const [doctors, setDoctors] = useState<Doctor[]>([])
+
+  useEffect(() => {
+    setDoctors([
+      {
+        id: "1",
+        name: "Dr. John Smith",
+      },
+      {
+        id: "2",
+        name: "Dr. Sarah Williams",
+      },
+      {
+        id: "3",
+        name: "Dr. Michael Jones",
+      },
+      
+    ])
+  }, [])
   const patients = [
     {
       id: 1,
@@ -29,25 +56,25 @@ export default function BookAppointmentPage() {
       isReturning: true,
     },
     {
-      id: 4,
-      fullName: "Sophia Turner",
-      patientId: "P-1026",
-      phoneNumber: "+91 9123456780",
-      isReturning: false,
-    },
-    {
-      id: 5,
-      fullName: "David Beckham",
-      patientId: "P-1027",
-      phoneNumber: "+91 9988123456",
+      id: 1,
+      fullName: "John Robertson",
+      patientId: "P-1023",
+      phoneNumber: "+91 9876543210",
       isReturning: true,
     },
     {
-      id: 6,
-      fullName: "Olivia Brown",
-      patientId: "P-1028",
-      phoneNumber: "+91 9876541230",
+      id: 2,
+      fullName: "Emma Watson",
+      patientId: "P-1024",
+      phoneNumber: "+91 9988776655",
       isReturning: false,
+    },
+    {
+      id: 3,
+      fullName: "Michael Jordan",
+      patientId: "P-1025",
+      phoneNumber: "+91 9871234567",
+      isReturning: true,
     },
   ]
   return (
@@ -68,12 +95,26 @@ export default function BookAppointmentPage() {
           ))}
         </div>
 
-        <AppointmentDetailsCard />
+        <AppointmentDetailsCard
+          doctor={doctor}
+          onDoctorChange={setDoctor}
+          visitType={visitType}
+          onVisitTypeChange={setVisitType}
+          appointmentDate={appointmentDate}
+          onAppointmentDateChange={setAppointmentDate}
+          doctors={doctors}
+        />
       </div>
 
       <div className="lg:col-span-4">
         <div className="lg:sticky lg:top-4">
-          <BookingSummaryCard />
+          <BookingSummaryCard
+            patientName="Emma Watson"
+            patientId="P-1024"
+            doctorName="Dr. Sarah Williams"
+            visitType="Standard Consultation"
+            appointmentDate="2026-05-08"
+          />
         </div>
       </div>
     </div>
