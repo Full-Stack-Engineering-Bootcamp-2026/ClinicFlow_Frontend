@@ -3,6 +3,7 @@ import {
   Users,
   Calendar,
   UserCog,
+  ClipboardPlus,
 } from "lucide-react"
 
 import type { LucideIcon } from "lucide-react"
@@ -39,20 +40,20 @@ export const sidebarItems = {
 
   NURSE: [
     {
-      title: "Dashboard",
-      path: "/",
-      icon: Home,
-    },
-    {
       title: "Live Queue",
-      path: "/live-queue",
+      path: "/nurse/live-queue",
       icon: Calendar,
     },
     {
       title: "Register Patient",
-      path: "/patients/register",
+      path: "/nurse/register-patient",
       icon: Users,
     },
+    {
+    title: "Book Appointment",
+    path: "/nurse/book-appointment",
+    icon: ClipboardPlus,
+  },
   ],
 
   DOCTOR: [

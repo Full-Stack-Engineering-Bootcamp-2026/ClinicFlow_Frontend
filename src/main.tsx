@@ -5,6 +5,8 @@ import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
 
+import { Toaster } from "sonner"
+
 import { Provider } from "react-redux";
 import { store, persistor } from "@/app/store";
 import { PersistGate } from "redux-persist/integration/react";
@@ -18,5 +20,10 @@ createRoot(document.getElementById("root")!).render(
       </PersistGate>
       </TooltipProvider>
     </Provider>
+     <Toaster
+      position="top-right"
+      richColors
+      closeButton
+    />
     </StrictMode>
 )
