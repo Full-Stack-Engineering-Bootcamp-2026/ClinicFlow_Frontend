@@ -31,24 +31,9 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   })
 
-<<<<<<< HEAD
-  const onSubmit = (data: LoginFormData) => {
-    const fakeToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-      btoa(
-        JSON.stringify({
-          name: "Raj",
-          email: data.email,
-          role: "ADMIN",
-          officialRole: "Manager",
-        })
-      ) +
-      ".signature"
-=======
   const onSubmit = async (data: LoginFormData) => {
     try {
       setIsSubmitting(true)
->>>>>>> develop
 
       setErrorMessage("")
 
