@@ -50,14 +50,6 @@ export const router = createBrowserRouter([
         element: <div>Dashboard</div>,
       },
       {
-        path: "patients",
-        element: <div>Patients Page</div>,
-      },
-      {
-        path: "appointments",
-        element: <div>Appointments Page</div>,
-      },
-      {
         path: "/nurse/book-appointment",
         element: <BookAppointmentPage />,
       },
