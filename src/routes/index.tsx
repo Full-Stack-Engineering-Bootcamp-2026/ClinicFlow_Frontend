@@ -3,7 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
-
+import ProfilePage from "@/features/profile/pages/ProfilePage";
 import ProtectedRoute from "./ProtectedRoute";
 import UnProtectedRoute from "./UnProtectedRoute";
 import AppLayout from "@/layouts/AppLayout";
@@ -53,6 +53,10 @@ export const router = createBrowserRouter([
         path: "appointments",
         element: <div>Appointments Page</div>,
       },
+      {
+        path:"profile",
+        element: <ProfilePage />
+      }
     ],
   },
 ]);
