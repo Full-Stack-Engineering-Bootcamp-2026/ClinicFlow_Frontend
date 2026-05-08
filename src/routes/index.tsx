@@ -12,6 +12,8 @@ import LiveQueuePage from "@/features/nurse/pages/LiveQueuePage"
 import RegisterPatientPage from "@/features/nurse/pages/RegisterPatientPage"
 import BookAppointmentPage from "@/features/nurse/pages/BookAppointmentPage"
 import SetPasswordPage from "@/features/auth/pages/SetPasswordPaage"
+import QueuePage from "@/features/doctor/pages/QueuePage"
+import ConsultationPage from "@/features/doctor/pages/ConsultationPage"
 
 export const router = createBrowserRouter([
   {
@@ -74,6 +76,14 @@ export const router = createBrowserRouter([
       {
         path:"profile",
         element: <ProfilePage />
+      },
+      {
+        path:"doctor/queue",
+        element:<QueuePage/>
+      },
+      {
+        path:"/doctor/consultation/:appointmentId",
+          element:<ConsultationPage />
       }
     ],
   },
