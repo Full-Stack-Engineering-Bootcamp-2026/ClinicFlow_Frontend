@@ -14,6 +14,7 @@ import BookAppointmentPage from "@/features/nurse/pages/BookAppointmentPage"
 import SetPasswordPage from "@/features/auth/pages/SetPasswordPaage"
 import QueuePage from "@/features/doctor/pages/QueuePage"
 import ConsultationPage from "@/features/doctor/pages/ConsultationPage"
+import PatientHistoryPage from "@/features/doctor/pages/PatientHistoryPage"
 
 export const router = createBrowserRouter([
   {
@@ -84,6 +85,11 @@ export const router = createBrowserRouter([
       {
         path:"/doctor/consultation/:appointmentId",
           element:<ConsultationPage />
+      },
+      {
+        path:"/doctor/patients/:patientId/history",
+        element:<PatientHistoryPage/>
+
       }
     ],
   },
