@@ -7,11 +7,17 @@ import { Bell, Settings } from "lucide-react";
 import { useSelector } from "react-redux";
 
 import type { RootState } from "@/app/store";
+import { useNavigate } from "react-router-dom";
 
 export function Navbar() {
+  const navigate = useNavigate();
   const user = useSelector(
     (state: RootState) => state.auth.user
   );
+
+  const handleClick=()=>{
+   navigate("/profile");
+  }
 
   return (
     <div className="h-14 flex items-center justify-between px-4 bg-card">
@@ -40,8 +46,9 @@ export function Navbar() {
           </div>
 
           <img
+            onClick={handleClick}
             src="https://i.pravatar.cc/40"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full cursor-pointer"
           />
         </div>
       </div>
