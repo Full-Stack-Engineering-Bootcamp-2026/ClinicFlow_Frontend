@@ -6,6 +6,7 @@ export interface Profile {
   role: string
   department: string
   specialization: string
+  createdAt: string
   profileImage?: string
 }
 
