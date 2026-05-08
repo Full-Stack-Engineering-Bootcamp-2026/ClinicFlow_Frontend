@@ -11,6 +11,7 @@ import ProfilePage from "@/features/profile/pages/ProfilePage";
 import LiveQueuePage from "@/features/nurse/pages/LiveQueuePage"
 import RegisterPatientPage from "@/features/nurse/pages/RegisterPatientPage"
 import BookAppointmentPage from "@/features/nurse/pages/BookAppointmentPage"
+import SetPasswordPage from "@/features/auth/pages/SetPasswordPaage"
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,14 @@ export const router = createBrowserRouter([
     element: (
       <UnProtectedRoute>
         <ResetPasswordPage />
+      </UnProtectedRoute>
+    ),
+  },
+  {
+    path: "/set-password",
+    element: (
+      <UnProtectedRoute>
+        <SetPasswordPage />
       </UnProtectedRoute>
     ),
   },
