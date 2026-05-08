@@ -19,20 +19,20 @@ export default function AdminStatCard({
 }: AdminStatCardProps) {
   return (
     <Card className="border-border shadow-sm">
-      <CardContent className="flex flex-col gap-4 p-5">
+      <CardContent className="flex flex-col gap-3 p-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {title}
             </p>
 
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
               {value}
             </h2>
           </div>
 
           {icon && (
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
               {icon}
             </div>
           )}

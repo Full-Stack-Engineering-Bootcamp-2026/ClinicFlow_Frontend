@@ -18,7 +18,7 @@ export default function QuickActions() {
   variant="outline"
 >
   <Link to="/doctor-schedules">
-    Manage Schedules
+    Manage Doctor Schedules
   </Link>
 </Button>
     </div>
