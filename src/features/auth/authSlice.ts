@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
-import type { AuthState, AuthUser } from "./types";
+import type { AuthState, AuthUser } from "./types/types";
 
 interface JwtPayload {
   name: string;

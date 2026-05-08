@@ -5,6 +5,8 @@ import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/store"
 import { Link, useNavigate } from "react-router-dom"
 import { setAuth } from "../authSlice"
+import { loginApi } from "../services/authApi"
+import { useState } from "react"
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
@@ -17,6 +19,10 @@ export default function LoginForm() {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [errorMessage, setErrorMessage] = useState("")
+
   const {
     register,
     handleSubmit,
@@ -25,21 +31,26 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = (data: LoginFormData) => {
-    const fakeToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-      btoa(
-        JSON.stringify({
-          name: "Raj",
-          email: data.email,
-          role: "ADMIN",
-          officialRole: "Manager",
-        })
-      ) +
-      ".signature"
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      setIsSubmitting(true)
 
-    dispatch(setAuth(fakeToken))
-    navigate("/")
+      setErrorMessage("")
+
+      const response = await loginApi(data.email, data.password)
+
+      dispatch(setAuth(response.token))
+
+      navigate("/")
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else {
+        setErrorMessage("Login failed")
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -77,12 +88,14 @@ export default function LoginForm() {
         </Link>
       </div>
 
+      {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
       <button
-        type="submit"
-        className="w-full rounded-md bg-primary py-2 text-primary-foreground transition hover:opacity-90"
-      >
-        Login
-      </button>
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full rounded-md bg-primary py-2 text-primary-foreground cursor-pointer transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+>
+  {isSubmitting ? "Logging in..." : "Login"}
+</button>
     </form>
   )
 }

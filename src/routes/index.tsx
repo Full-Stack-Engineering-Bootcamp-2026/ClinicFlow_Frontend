@@ -1,12 +1,16 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom"
 
-import LoginPage from "@/features/auth/pages/LoginPage";
-import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage";
-import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
+import LoginPage from "@/features/auth/pages/LoginPage"
+import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage"
+import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage"
+
+import ProtectedRoute from "./ProtectedRoute"
+import UnProtectedRoute from "./UnProtectedRoute"
+import AppLayout from "@/layouts/AppLayout"
 import ProfilePage from "@/features/profile/pages/ProfilePage";
-import ProtectedRoute from "./ProtectedRoute";
-import UnProtectedRoute from "./UnProtectedRoute";
-import AppLayout from "@/layouts/AppLayout";
+import LiveQueuePage from "@/features/nurse/pages/LiveQueuePage"
+import RegisterPatientPage from "@/features/nurse/pages/RegisterPatientPage"
+import BookAppointmentPage from "@/features/nurse/pages/BookAppointmentPage"
 
 export const router = createBrowserRouter([
   {
@@ -36,22 +40,27 @@ export const router = createBrowserRouter([
 
   {
     path: "/",
-    element:
-        <ProtectedRoute>
+    element: (
+      <ProtectedRoute>
         <AppLayout />
-        </ProtectedRoute>,
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
-        element: <div>Dashboard</div>, 
+        element: <div>Dashboard</div>,
       },
       {
-        path: "patients",
-        element: <div>Patients Page</div>,
+        path: "/nurse/book-appointment",
+        element: <BookAppointmentPage />,
       },
       {
-        path: "appointments",
-        element: <div>Appointments Page</div>,
+        path: "/nurse/live-queue",
+        element: <LiveQueuePage />,
+      },
+      {
+        path: "/nurse/register-patient",
+        element: <RegisterPatientPage />,
       },
       {
         path:"profile",
@@ -59,4 +68,4 @@ export const router = createBrowserRouter([
       }
     ],
   },
-]);
+])
