@@ -22,8 +22,6 @@ export async function getActiveDoctorsApi(token: string) {
   return data.data
 }
 
-
-
 export async function registerPatientApi(
   token: string,
   payload: RegisterPatientPayload
@@ -49,19 +47,14 @@ export async function registerPatientApi(
   return data.data
 }
 
-
-export async function searchPatientsApi(
-  token: string,
-  keyword: string
-) {
+export async function searchPatientsApi(token: string, keyword: string) {
   const response = await fetch(
     `${BASE_URL}/appointments/patients/search?keyword=${keyword}`,
     {
       method: "GET",
 
       headers: {
-        "Content-Type":
-          "application/json",
+        "Content-Type": "application/json",
 
         Authorization: `Bearer ${token}`,
       },
@@ -71,43 +64,52 @@ export async function searchPatientsApi(
   const data = await response.json()
 
   if (!response.ok || !data.success) {
-    throw new Error(
-      data.message ||
-        "Failed to search patients"
-    )
+    throw new Error(data.message || "Failed to search patients")
   }
 
   return data.data
 }
 
-
 export async function bookAppointmentApi(
   token: string,
   payload: BookAppointmentPayload
 ) {
-  const response = await fetch(
-    `${BASE_URL}/appointments`,
-    {
-      method: "POST",
+  const response = await fetch(`${BASE_URL}/appointments`, {
+    method: "POST",
 
-      headers: {
-        "Content-Type":
-          "application/json",
+    headers: {
+      "Content-Type": "application/json",
 
-        Authorization: `Bearer ${token}`,
-      },
+      Authorization: `Bearer ${token}`,
+    },
 
-      body: JSON.stringify(payload),
-    }
-  )
+    body: JSON.stringify(payload),
+  })
 
   const data = await response.json()
 
   if (!response.ok || !data.success) {
-    throw new Error(
-      data.message ||
-        "Failed to book appointment"
-    )
+    throw new Error(data.message || "Failed to book appointment")
+  }
+
+  return data.data
+}
+
+export async function getLiveQueueApi(token: string) {
+  const response = await fetch(`${BASE_URL}/live-queue`, {
+    method: "GET",
+
+    headers: {
+      "Content-Type": "application/json",
+
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const data = await response.json()
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || "Failed to fetch live queue")
   }
 
   return data.data

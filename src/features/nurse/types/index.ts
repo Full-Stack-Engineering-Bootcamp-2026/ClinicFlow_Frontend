@@ -139,10 +139,35 @@ export type DoctorQueue = {
   doctorId: number
   doctorName: string
   specialization: string
-  queueState: string
-  servingNow: WaitingPatient | null
-  nextUp: WaitingPatient | null
-  lastServed: WaitingPatient | null
+  queueState:
+    | "ACTIVE"
+    | "YET_TO_START"
+    | "BETWEEN_CONSULTATIONS"
+    | "BREAK"
+  servingNow: QueuePatient | null
+  nextUp: QueuePatient | null
+  lastServed: QueuePatient | null
   waitingCount: number
-  waitingPatients: WaitingPatient[]
+  waitingPatients: QueuePatient[]
+}
+
+export type QueuePatient = {
+  appointmentId: number
+  queueNumber: number
+  patientName: string
+  mobile: string
+  status: string
+}
+
+export type LiveQueueStats = {
+  totalWaitingPatients: number
+  activeDoctors: number
+  urgentCases: number
+  averageWaitTime: number
+}
+
+export type LiveQueueResponse = {
+  stats: LiveQueueStats
+
+  doctorQueues: DoctorQueue[]
 }
