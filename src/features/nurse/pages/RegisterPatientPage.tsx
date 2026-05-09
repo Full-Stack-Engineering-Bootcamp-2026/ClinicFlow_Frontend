@@ -1,23 +1,48 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
 import { Check, X } from "lucide-react"
+import type { RootState } from "@/app/store"
+import { Button } from "@/components/ui/button"
 import RegisterPatientForm from "../components/RegisterPatientForm"
-
+import { registerPatientApi } from "../services/nurseApi"
 import type { RegisterPatientFormData } from "../types"
 
 export default function RegisterPatientPage() {
   const navigate = useNavigate()
-
+  const token = useSelector((state: RootState) => state.auth.token)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
-
   const [errorMessage, setErrorMessage] = useState("")
 
-  const handleRegisterPatient = (data: RegisterPatientFormData) => {
-    console.log(data)
+  const handleRegisterPatient = async (data: RegisterPatientFormData) => {
+    try {
+      setIsSubmitting(true)
+      setErrorMessage("")
+      setSuccessMessage("")
 
-    setErrorMessage("")
+      console.log(data);
 
-    setSuccessMessage("Patient registered successfully")
+      const response = await registerPatientApi(token!, {
+        fullName: data.fullName,
+        mobile: data.mobileNumber,
+        dateOfBirth: data.dateOfBirth,
+        gender: data.gender,
+        bloodGroup: data.bloodGroup,
+        address: data.address,
+        medicalNotes: data.medicalNotes,
+      })
+
+      setSuccessMessage(`Patient ${response.fullName} registered successfully`)
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else {
+        setErrorMessage("Failed to register patient")
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -57,12 +82,12 @@ export default function RegisterPatientPage() {
           </div>
 
           {successMessage && (
-            <button
+            <Button
               onClick={() => navigate("/nurse/book-appointment")}
-              className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground cursor-pointer transition hover:opacity-90"
+              className="cursor-pointer"
             >
               Book Appointment
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -76,7 +101,10 @@ export default function RegisterPatientPage() {
           </p>
         </div>
 
-        <RegisterPatientForm onSubmit={handleRegisterPatient} />
+        <RegisterPatientForm
+          onSubmit={handleRegisterPatient}
+          isSubmitting={isSubmitting}
+        />
       </div>
     </div>
   )
