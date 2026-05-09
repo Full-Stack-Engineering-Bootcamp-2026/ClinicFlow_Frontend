@@ -17,10 +17,13 @@ interface CompletedConsultationsCardProps {
 
   consultations:
     CompletedConsultation[];
+    onViewPrescription:
+  (consultationId: number) => void;
 }
 
 const CompletedConsultationsCard = ({
   consultations,
+  onViewPrescription,
 }: CompletedConsultationsCardProps) => {
 
   return (
@@ -89,12 +92,10 @@ const CompletedConsultationsCard = ({
 
               </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-              >
-                View Prescription
-              </Button>
+                <Button variant="outline" onClick={() =>onViewPrescription(consultation.consultationId)}>
+                    View Prescription
+
+                </Button>
 
             </div>
           ))
