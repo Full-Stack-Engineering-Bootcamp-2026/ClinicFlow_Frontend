@@ -57,7 +57,6 @@ export const sidebarItems = {
   ],
 
   DOCTOR: [
-    
     {
       title: "Live Queue",
       path: "/doctor/queue",

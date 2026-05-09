@@ -13,9 +13,30 @@ export type DoctorQueueCardProps = {
   queue: DoctorQueue
 }
 
+export type RegisterPatientPayload = {
+  fullName: string
+  mobile: string
+  dateOfBirth: string
+  gender: string
+  bloodGroup: string
+  address?: string
+  medicalNotes?: string
+}
+
+export type BookAppointmentPayload = {
+  doctorId: number
+  patientId: number
+  patientName: string
+  patientPhone: string
+  appointmentDate: string
+  visitType: string
+  notes?: string
+}
+
 export type QueueTableProps = {
   patients: WaitingPatient[]
 }
+
 export type RegisterPatientFormData = {
   fullName: string
   mobileNumber: string
@@ -37,14 +58,23 @@ export type AppointmentDetailsCardProps = {
 }
 
 export type Doctor = {
-  id: string
-  name: string
+  doctorId: number
+  fullName: string
+  specialization: string
 }
 
 export type PatientSearchCardProps = {
   value: string
   onChange: (value: string) => void
   onSearch?: () => void
+}
+
+export type PatientSearchResult = {
+  patientId: number
+  fullName: string
+  mobile: string
+  hasHistory: boolean
+  patientType: "NEW" | "REGULAR"
 }
 
 export type PatientCardProps = {
@@ -63,7 +93,7 @@ export type BookingSummaryCardProps = {
   doctorName?: string
   visitType?: string
   appointmentDate?: string
-  estimatedWaitTime?: string
+  isBooking?: boolean
   onConfirm?: () => void
   onCancel?: () => void
 }
@@ -80,6 +110,15 @@ export type AppointmentSuccessDialogProps = {
   onGoToQueue: () => void
 }
 
+export type BookAppointmentResponse = {
+  appointmentId: number
+  patientName: string
+  doctorName: string
+  queueNumber: number
+  queueLabel: string
+  status: string
+  appointmentDate: string
+}
 
 export type QueueStats = {
   totalWaitingPatients: number
@@ -100,10 +139,35 @@ export type DoctorQueue = {
   doctorId: number
   doctorName: string
   specialization: string
-  queueState: string
-  servingNow: WaitingPatient | null
-  nextUp: WaitingPatient | null
-  lastServed: WaitingPatient | null
+  queueState:
+    | "ACTIVE"
+    | "YET_TO_START"
+    | "BETWEEN_CONSULTATIONS"
+    | "BREAK"
+  servingNow: QueuePatient | null
+  nextUp: QueuePatient | null
+  lastServed: QueuePatient | null
   waitingCount: number
-  waitingPatients: WaitingPatient[]
+  waitingPatients: QueuePatient[]
+}
+
+export type QueuePatient = {
+  appointmentId: number
+  queueNumber: number
+  patientName: string
+  mobile: string
+  status: string
+}
+
+export type LiveQueueStats = {
+  totalWaitingPatients: number
+  activeDoctors: number
+  urgentCases: number
+  averageWaitTime: number
+}
+
+export type LiveQueueResponse = {
+  stats: LiveQueueStats
+
+  doctorQueues: DoctorQueue[]
 }

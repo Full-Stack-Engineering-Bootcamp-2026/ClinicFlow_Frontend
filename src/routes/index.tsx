@@ -15,6 +15,9 @@ import SetPasswordPage from "@/features/auth/pages/SetPasswordPaage"
 import QueuePage from "@/features/doctor/pages/QueuePage"
 import ConsultationPage from "@/features/doctor/pages/ConsultationPage"
 import PatientHistoryPage from "@/features/doctor/pages/PatientHistoryPage"
+import DashboardPage from "@/features/admin/pages/DashboardPage";
+import StaffManagementPage from "@/features/admin/pages/StaffManagementPage";
+import ManageSchedulePage from "@/features/admin/pages/ManageSchedulePage";
 
 export const router = createBrowserRouter([
   {
@@ -60,7 +63,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <div>Dashboard</div>,
+        element: <DashboardPage />, 
       },
       {
         path: "/nurse/book-appointment",
@@ -69,6 +72,14 @@ export const router = createBrowserRouter([
       {
         path: "/nurse/live-queue",
         element: <LiveQueuePage />,
+      },
+      {
+        path: "staff-management",
+        element: <StaffManagementPage />,
+      },
+      {
+        path: "doctor-schedules",
+        element: <ManageSchedulePage />,
       },
       {
         path: "/nurse/register-patient",
