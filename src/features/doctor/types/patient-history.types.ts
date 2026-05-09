@@ -1,16 +1,7 @@
-export interface PatientSummary {
-  id: number;
-
-  fullName: string;
-
-  gender: string;
-
-  age: number;
-
-  bloodGroup: string;
-}
-
 export interface VisitHistory {
+
+  consultationId: number;
+
   appointmentDate: string;
 
   diagnosis: string;
@@ -20,8 +11,20 @@ export interface VisitHistory {
   status: string;
 }
 
+
 export interface PatientHistoryResponse {
-  patient: PatientSummary;
+
+  patient: {
+    id: number;
+
+    fullName: string;
+
+    gender: string;
+
+    age: number;
+
+    bloodGroup: string;
+  };
 
   visitHistory: VisitHistory[];
 }

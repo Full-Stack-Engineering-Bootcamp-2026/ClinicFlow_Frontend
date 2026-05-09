@@ -11,7 +11,7 @@ export interface PatientHistoryResponse {
 
     bloodGroup: string;
   };
-
+  
   visitHistory: {
     consultationId: number;
 

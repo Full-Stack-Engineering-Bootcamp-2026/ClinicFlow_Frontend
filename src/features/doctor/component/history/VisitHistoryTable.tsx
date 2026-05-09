@@ -1,54 +1,116 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { VisitHistory } from "../../types/patient-history.types";
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import type {
+  VisitHistory,
+} from "../../types/patient-history.types";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import {
+  Button,
+} from "@/components/ui/button";
 
 interface VisitHistoryTableProps {
+
   visits: VisitHistory[];
 }
 
-const VisitHistoryTable = ({ visits }: VisitHistoryTableProps) => {
+
+
+const VisitHistoryTable = ({
+  visits,
+}: VisitHistoryTableProps) => {
+
+  const navigate = useNavigate();
+
+
   return (
-    <Card className="border border-border shadow-sm">
+
+    <Card>
+
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">Visit History</CardTitle>
+
+        <CardTitle>
+          Visit History
+        </CardTitle>
+
       </CardHeader>
 
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Visit Date</TableHead>
-                <TableHead>Diagnosis</TableHead>
-                <TableHead>Doctor</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
 
-            <TableBody>
-              {visits.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
-                    No history found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                visits.map((visit, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{visit.appointmentDate}</TableCell>
-                    <TableCell>{visit.diagnosis}</TableCell>
-                    <TableCell className="text-muted-foreground">{visit.doctorName}</TableCell>
-                    <TableCell>
-                      <div className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                        {visit.status}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+      <CardContent className="space-y-4">
+
+        {visits.length === 0 ? (
+
+          <div className="py-8 text-center text-muted-foreground">
+
+            No consultation history found
+
+          </div>
+
+        ) : (
+
+          visits.map((visit) => (
+
+            <div
+              key={visit.consultationId}
+              className="flex flex-col gap-4 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between"
+            >
+
+           
+              <div className="space-y-1">
+
+                <h3 className="font-semibold">
+
+                  {visit.diagnosis}
+
+                </h3>
+
+                <p className="text-sm text-muted-foreground">
+
+                  {visit.appointmentDate}
+
+                </p>
+
+                <p className="text-sm text-muted-foreground">
+
+                  {visit.doctorName}
+
+                </p>
+
+              </div>
+
+
+              <div className="flex items-center gap-4">
+
+                <span className="text-sm font-medium">
+
+                  {visit.status}
+
+                </span>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    navigate(
+                      `/doctor/patients/consultations/${visit.consultationId}`
+                    )
+                  }
+                >
+                  View Details
+                </Button>
+
+              </div>
+
+            </div>
+          ))
+        )}
       </CardContent>
     </Card>
   );

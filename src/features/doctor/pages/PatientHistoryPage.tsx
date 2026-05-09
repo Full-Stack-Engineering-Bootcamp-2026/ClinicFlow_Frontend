@@ -1,65 +1,137 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import PatientSummaryCard from "../component/history/PatientSummaryCard";
-import VisitHistoryTable from "../component/history/VisitHistoryTable";
-import type { PatientHistoryResponse } from "../types/patient-history.types";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-const patientHistoryData: PatientHistoryResponse = {
-  patient: {
-    id: 1,
-    fullName: "Marcus Thompson",
-    gender: "Male",
-    age: 34,
-    bloodGroup: "O+",
-  },
-  visitHistory: [
-    {
-      appointmentDate: "2026-05-01",
-      diagnosis: "Viral Fever",
-      doctorName: "Dr. Adrian Miller",
-      status: "COMPLETED",
-    },
-    {
-      appointmentDate: "2026-04-10",
-      diagnosis: "Hypertension",
-      doctorName: "Dr. Adrian Miller",
-      status: "COMPLETED",
-    },
-    {
-      appointmentDate: "2026-03-18",
-      diagnosis: "Migraine",
-      doctorName: "Dr. Sarah Wilson",
-      status: "COMPLETED",
-    },
-  ],
-};
+import {
+  useParams,
+} from "react-router-dom";
+
+import PatientSummaryCard
+  from "../component/history/PatientSummaryCard";
+
+import VisitHistoryTable
+  from "../component/history/VisitHistoryTable";
+
+import {
+  getPatientHistory,
+} from "../services/patient-history.service";
+
+import type {
+  PatientHistoryResponse,
+} from "../types/patient-history.types";
+
 
 const PatientHistoryPage = () => {
-  const navigate = useNavigate();
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
+  const { patientId } = useParams();
+
+  const [
+    historyData,
+    setHistoryData,
+  ] = useState<
+    PatientHistoryResponse | null
+  >(null);
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
+
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+
+  useEffect(() => {
+
+    const fetchPatientHistory =
+      async () => {
+
+        try {
+
+          setLoading(true);
+
+          const data =
+            await getPatientHistory(
+              Number(patientId)
+            );
+
+          setHistoryData(data);
+
+        } catch (error: any) {
+
+          console.error(
+            "Patient History Error:",
+            error?.response?.data ||
+            error.message
+          );
+
+          setError(
+            error?.response?.data?.message ||
+            "Failed to load patient history"
+          );
+
+        } finally {
+
+          setLoading(false);
+        }
+      };
+
+    if (patientId) {
+      fetchPatientHistory();
+    }
+
+  }, [patientId]);
+
+  if (loading) {
+
+    return (
+      <div className="p-6">
+        Loading patient history...
+      </div>
+    );
+  }
+
+  if (error || !historyData) {
+
+    return (
+      <div className="p-6 text-red-500">
+        {error}
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" onClick={handleGoBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
 
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Patient History</h1>
-              <p className="text-sm text-muted-foreground">View patient consultation history</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background">
+
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6">
+
+        <div className="space-y-1">
+
+          <h1 className="text-3xl font-bold">
+
+            Patient History
+
+          </h1>
+
+          <p className="text-sm text-muted-foreground">
+
+            View patient consultation history
+
+          </p>
         </div>
 
-        <PatientSummaryCard patient={patientHistoryData.patient} />
-        <VisitHistoryTable visits={patientHistoryData.visitHistory} />
+        <PatientSummaryCard
+          patient={historyData.patient}
+        />
+
+        <VisitHistoryTable
+          visits={historyData.visitHistory}
+        />
+
       </div>
     </div>
   );
