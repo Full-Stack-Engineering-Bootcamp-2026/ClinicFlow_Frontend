@@ -19,14 +19,14 @@ export default function AdminStatCard({
 }: AdminStatCardProps) {
   return (
     <Card className="border-border shadow-sm">
-      <CardContent className="flex flex-col gap-3 p-4">
+      <CardContent className="flex min-h-24 flex-col gap-2 p-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-[11px] font-medium uppercase text-muted-foreground">
               {title}
             </p>
 
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
               {value}
             </h2>
           </div>
@@ -51,7 +51,7 @@ export default function AdminStatCard({
           )}
 
           {subtitle && (
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-[11px] text-muted-foreground">{subtitle}</p>
           )}
         </div>
       </CardContent>

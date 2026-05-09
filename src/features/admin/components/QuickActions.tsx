@@ -2,25 +2,32 @@ import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import AddStaffDialog from "./AddStaffDialog"
 
-export default function QuickActions() {
-  return (
-    <div className="flex flex-wrap gap-3">
-      <AddStaffDialog
-        trigger={
-          <Button>
-            Add Staff
-          </Button>
-        }
-      />
+interface QuickActionsProps {
+ onStaffCreated?: () => void
+}
 
-      <Button
-  asChild
-  variant="outline"
+export default function QuickActions({
+ onStaffCreated,
+}: QuickActionsProps) {
+ return (
+ <div className="flex flex-wrap gap-3">
+ <AddStaffDialog
+ onStaffCreated={onStaffCreated}
+ trigger={
+ <Button>
+ Add Staff
+ </Button>
+ }
+ />
+
+ <Button
+ asChild
+ variant="outline"
 >
-  <Link to="/doctor-schedules">
-    Manage Doctor Schedules
-  </Link>
+ <Link to="/doctor-schedules">
+ Manage Doctor Schedules
+ </Link>
 </Button>
-    </div>
-  )
+ </div>
+ )
 }

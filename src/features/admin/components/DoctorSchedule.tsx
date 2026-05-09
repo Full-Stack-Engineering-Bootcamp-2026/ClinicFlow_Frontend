@@ -1,11 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-import { schedules } from "../mock/dashboard.mock"
+import type { ScheduleItem } from "../types/dashboard.types"
 
-export default function DoctorSchedule() {
+interface DoctorScheduleProps {
+  schedules: ScheduleItem[]
+  isLoading?: boolean
+}
+
+export default function DoctorSchedule({
+  schedules,
+  isLoading = false,
+}: DoctorScheduleProps) {
   return (
     <Card className="border-border shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle className="text-base font-semibold">
           Doctor Schedule
         </CardTitle>
@@ -14,13 +22,27 @@ export default function DoctorSchedule() {
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {schedules.map((schedule) => (
+        {isLoading &&
+          Array.from({ length: 7 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-14 animate-pulse rounded-lg border border-border bg-muted"
+            />
+          ))}
+
+        {!isLoading && schedules.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No doctor schedule found for this week.
+          </p>
+        )}
+
+        {!isLoading && schedules.map((schedule) => (
           <div
   key={schedule.id}
-  className="flex items-center justify-between rounded-lg border border-border p-3"
+  className="flex items-center justify-between rounded-lg border border-border p-2.5"
 >
   <div className="flex gap-3">
-    <div className="flex h-11 w-11 flex-col items-center justify-center rounded-md bg-muted">
+    <div className="flex h-10 w-10 flex-col items-center justify-center rounded-md bg-muted">
       <span className="text-[10px] text-muted-foreground">
         {schedule.day}
       </span>

@@ -3,198 +3,287 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useSelector } from "react-redux"
+import { toast } from "react-toastify"
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
+ Dialog,
+ DialogContent,
+ DialogHeader,
+ DialogTitle,
+ DialogDescription,
+ DialogTrigger,
 } from "@/components/ui/dialog"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import {
-  addStaffSchema,
-  type AddStaffFormValues,
+ addStaffSchema,
+ type AddStaffFormValues,
 } from "../types/staff.schema"
+import type { RootState } from "@/app/store"
+import { createStaff, getRoles } from "../services/staffApi"
+import type { RoleResponse } from "../types/staff.types"
 
 interface AddStaffDialogProps {
-  trigger: React.ReactNode
+ trigger: React.ReactNode
+ onStaffCreated?: () => void
 }
 
 export default function AddStaffDialog({
-  trigger,
+ trigger,
+ onStaffCreated,
 }: AddStaffDialogProps) {
-  const [open, setOpen] = useState(false)
+ const token = useSelector((state: RootState) => state.auth.token)
+ const [open, setOpen] = useState(false)
+ const [roles, setRoles] = useState<RoleResponse[]>([])
+ const [isSubmitting, setIsSubmitting] = useState(false)
+ const [isLoadingRoles, setIsLoadingRoles] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<AddStaffFormValues>({
-    resolver: zodResolver(addStaffSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      role: "",
-      phone: "",
-      password: "",
-    },
-  })
+ const {
+ register,
+ handleSubmit,
+ formState: { errors },
+ reset,
+ } = useForm<AddStaffFormValues>({
+ resolver: zodResolver(addStaffSchema),
+ defaultValues: {
+ fullName: "",
+ email: "",
+ roleId: 0,
+ phone: "",
+ password: "",
+ officialRole: "",
+ specialization: "",
+ },
+ })
 
-  const onSubmit = (data: AddStaffFormValues) => {
-    console.log("Validated Staff Data:", data)
+ const handleOpenChange = async (nextOpen: boolean) => {
+ setOpen(nextOpen)
 
-    reset()
+ if (!nextOpen || !token || roles.length > 0) return
 
-    setOpen(false)
-  }
+ try {
+ setIsLoadingRoles(true)
+ setRoles(await getRoles(token))
+ } catch (error) {
+ toast.error(
+ error instanceof Error
+ ? error.message
+ : "Failed to load roles"
+ )
+ } finally {
+ setIsLoadingRoles(false)
+ }
+ }
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger}
-      </DialogTrigger>
+const onSubmit = async (data: AddStaffFormValues) => {
+ if (!token) {
+ toast.error("Please login again")
+ return
+ }
 
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>
-            Add Staff Account
-          </DialogTitle>
+ try {
+ setIsSubmitting(true)
 
-          <DialogDescription>
-            Register a new clinical staff member
-          </DialogDescription>
-        </DialogHeader>
+ await createStaff(token, {
+ ...data,
+ officialRole: data.officialRole?.trim() || undefined,
+ specialization:
+ data.specialization?.trim() || undefined,
+ })
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-5 pt-4"
-        >
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Full Name
-            </label>
+ toast.success("Staff account created")
 
-            <Input
-              placeholder="Dr. Helena Hills"
-              {...register("fullName")}
-            />
+ onStaffCreated?.()
 
-            {errors.fullName && (
-              <p className="text-sm text-destructive">
-                {errors.fullName.message}
-              </p>
-            )}
-          </div>
+ reset()
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Email Address
-            </label>
+ setOpen(false)
+ } catch (error) {
+ toast.error(
+ error instanceof Error
+ ? error.message
+ : "Failed to create staff account"
+ )
+ } finally {
+ setIsSubmitting(false)
+ }
+ }
 
-            <Input
-              type="email"
-              placeholder="staff@clinicflow.com"
-              {...register("email")}
-            />
+ return (
+ <Dialog open={open} onOpenChange={handleOpenChange}>
+ <DialogTrigger asChild>
+ {trigger}
+ </DialogTrigger>
 
-            {errors.email && (
-              <p className="text-sm text-destructive">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+ <DialogContent className="sm:max-w-xl">
+ <DialogHeader>
+ <DialogTitle>
+ Add Staff Account
+ </DialogTitle>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Role
-              </label>
+ <DialogDescription>
+ Register a new clinical staff member
+ </DialogDescription>
+ </DialogHeader>
 
-              <select
-                {...register("role")}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="">
-                  Select Role
-                </option>
+ <form
+ onSubmit={handleSubmit(onSubmit)}
+ className="space-y-5 pt-4"
+ >
+ <div className="space-y-2">
+ <label className="text-sm font-medium">
+ Full Name
+ </label>
 
-                <option value="DOCTOR">
-                  Doctor
-                </option>
+<Input
+ placeholder="Dr. Helena Hills"
+ {...register("fullName")}
+ />
 
-                <option value="NURSE">
-                  Nurse
-                </option>
+ {errors.fullName && (
+ <p className="text-sm text-destructive">
+ {errors.fullName.message}
+ </p>
+ )}
+ </div>
 
-                <option value="ADMIN">
-                  Admin
-                </option>
-              </select>
+ <div className="space-y-2">
+ <label className="text-sm font-medium">
+ Email Address
+ </label>
 
-              {errors.role && (
-                <p className="text-sm text-destructive">
-                  {errors.role.message}
-                </p>
-              )}
-            </div>
+ <Input
+ type="email"
+ placeholder="staff@clinicflow.com"
+ {...register("email")}
+ />
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Phone Number
-              </label>
+ {errors.email && (
+ <p className="text-sm text-destructive">
+ {errors.email.message}
+ </p>
+ )}
+ </div>
 
-              <Input
-                placeholder="+91 9876543210"
-                {...register("phone")}
-              />
+<div className="grid gap-4 md:grid-cols-2">
+ <div className="space-y-2">
+ <label className="text-sm font-medium">
+ Role
+ </label>
 
-              {errors.phone && (
-                <p className="text-sm text-destructive">
-                  {errors.phone.message}
-                </p>
-              )}
-            </div>
-          </div>
+ <select
+ {...register("roleId", {
+ valueAsNumber: true,
+ })}
+ className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+ disabled={isLoadingRoles}
+ >
+ <option value={0}>
+ {isLoadingRoles
+ ? "Loading roles..."
+ : "Select Role"}
+ </option>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Temporary Password
-            </label>
+{roles.map((role) => (
+ <option
+ key={role.id}
+ value={role.id}
+ >
+ {role.name}
+ </option>
+ ))}
+ </select>
 
-            <Input
-              type="password"
-              placeholder="********"
-              {...register("password")}
-            />
+ {errors.roleId && (
+ <p className="text-sm text-destructive">
+ {errors.roleId.message}
+ </p>
+ )}
+ </div>
 
-            {errors.password && (
-              <p className="text-sm text-destructive">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+ <div className="space-y-2">
+ <label className="text-sm font-medium">
+ Phone Number
+ </label>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
+ <Input
+ placeholder="+91 9876543210"
+ {...register("phone")}
+ />
 
-            <Button type="submit">
-              Create Staff Account
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
-  )
+ {errors.phone && (
+ <p className="text-sm text-destructive">
+ {errors.phone.message}
+ </p>
+ )}
+ </div>
+ </div>
+
+ <div className="grid gap-4 md:grid-cols-2">
+ <div className="space-y-2">
+ <label className="text-sm font-medium">
+ Official Role
+ </label>
+
+ <Input
+ placeholder="Senior Cardiologist"
+ {...register("officialRole")}
+ />
+ </div>
+
+ <div className="space-y-2">
+ <label className="text-sm font-medium">
+ Specialization
+ </label>
+
+ <Input
+ placeholder="Cardiology"
+ {...register("specialization")}
+ />
+ </div>
+ </div>
+
+ <div className="space-y-2">
+ <label className="text-sm font-medium">
+ Temporary Password
+ </label>
+
+ <Input
+ type="password"
+ placeholder="********"
+ {...register("password")}
+ />
+
+ {errors.password && (
+ <p className="text-sm text-destructive">
+ {errors.password.message}
+ </p>
+ )}
+ </div>
+
+ <div className="flex justify-end gap-3 pt-4">
+ <Button
+ type="button"
+ variant="outline"
+ onClick={() => setOpen(false)}
+ >
+ Cancel
+ </Button>
+
+ <Button
+ type="submit"
+ disabled={isSubmitting}
+ >
+ {isSubmitting
+ ? "Creating..."
+ : "Create Staff Account"}
+ </Button>
+ </div>
+ </form>
+ </DialogContent>
+ </Dialog>
+ )
 }
