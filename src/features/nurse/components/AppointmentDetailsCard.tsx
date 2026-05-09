@@ -40,8 +40,11 @@ export default function AppointmentDetailsCard({
 
             <SelectContent>
               {doctors.map((doctor) => (
-                <SelectItem key={doctor.id} value={doctor.id}>
-                  {doctor.name}
+                <SelectItem
+                  key={doctor.doctorId}
+                  value={doctor.doctorId.toString()}
+                >
+                  {doctor.fullName} • {doctor.specialization}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -59,7 +62,7 @@ export default function AppointmentDetailsCard({
             <SelectContent>
               <SelectItem value="STANDARD">Standard Consultation</SelectItem>
 
-              <SelectItem value="EMERGENCY">Emergency</SelectItem>
+              <SelectItem value="URGENT">Urgent</SelectItem>
 
               <SelectItem value="FOLLOW_UP">Follow Up</SelectItem>
             </SelectContent>
