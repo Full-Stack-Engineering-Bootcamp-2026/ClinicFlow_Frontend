@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 
 import {
   getDashboardSummary,
@@ -12,7 +17,8 @@ import type {
   StaffActivity,
 } from "../types/dashboard.types"
 
-const formatDateForApi = (date: Date) => date.toISOString().slice(0, 10)
+const formatDateForApi = (date: Date) =>
+  date.toISOString().slice(0, 10)
 
 const getWeekStart = () => {
   const today = new Date()
@@ -49,7 +55,13 @@ const mapStats = (
   {
     title: "Completed",
     value: data.completedAppointments,
-    subtitle: `${data.cancelledAppointments} cancelled`,
+    subtitle: "All completed",
+    trend: "neutral",
+  },
+  {
+    title: "Cancelled",
+    value: data.cancelledAppointments,
+    subtitle: "Cancelled appointments",
     trend: "neutral",
   },
 ]
@@ -58,12 +70,12 @@ const mapSchedule = (
   data: AdminDashboardData["doctorSchedule"]
 ): ScheduleItem[] =>
   data.map((item, index) => {
-    const date = new Date(item.date)
+    const [, , dayOfMonth] = item.date.split("-")
 
     return {
       id: index + 1,
       day: item.day,
-      date: String(date.getDate()).padStart(2, "0"),
+      date: dayOfMonth,
       title: "Doctor Availability",
       doctors: item.doctorCount,
       appointments: item.appointmentCount,
@@ -77,6 +89,7 @@ const mapRecentStaff = (
     id: staff.id,
     name: staff.fullName,
     role: staff.role,
+    officialRole: staff.officialRole,
     action: staff.isActive ? "Active" : "Inactive",
     time: "",
     status: staff.isActive ? "On Duty" : "Flagged",
@@ -84,68 +97,52 @@ const mapRecentStaff = (
 
 export function useAdminDashboard(token: string | null) {
   const [data, setData] = useState<AdminDashboardData | null>(null)
+  const [recentStaffPage, setRecentStaffPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
 
-  useEffect(() => {
+  const loadDashboard = useCallback(async () => {
     if (!token) {
       setIsLoading(false)
       return
     }
 
-    const loadDashboard = async () => {
-      try {
-        setIsLoading(true)
-        setError("")
+    try {
+      setIsLoading(true)
+      setError("")
 
-        const [summary, doctorSchedule, recentStaff] = await Promise.all([
+      const [summary, doctorSchedule, recentStaff] =
+        await Promise.all([
           getDashboardSummary(token),
           getDoctorScheduleDashboard(token, getWeekStart()),
-          getRecentStaff(token),
+          getRecentStaff(token, recentStaffPage, 5),
         ])
 
-        setData({ summary, doctorSchedule, recentStaff })
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load dashboard"
-        )
-      } finally {
-        setIsLoading(false)
-      }
+      setData({ summary, doctorSchedule, recentStaff })
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to load dashboard"
+      )
+    } finally {
+      setIsLoading(false)
     }
+  }, [recentStaffPage, token])
 
+  useEffect(() => {
     loadDashboard()
-  }, [token])
+  }, [loadDashboard])
 
-  const stats = useMemo(() => (data ? mapStats(data.summary) : []), [data])
+  const stats = useMemo(
+    () => (data ? mapStats(data.summary) : []),
+    [data]
+  )
 
   const schedules = useMemo(
     () => (data ? mapSchedule(data.doctorSchedule) : []),
     [data]
   )
-  const refetch = () => {
-    if (!token) return
-
-    setIsLoading(true)
-    setError("")
-
-    Promise.all([
-      getDashboardSummary(token),
-      getDoctorScheduleDashboard(token, getWeekStart()),
-      getRecentStaff(token),
-    ])
-      .then(([summary, doctorSchedule, recentStaff]) => {
-        setData({ summary, doctorSchedule, recentStaff })
-      })
-      .catch((err) => {
-        setError(
-          err instanceof Error ? err.message : "Failed to load dashboard"
-        )
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  } 
 
   const recentActivities = useMemo(
     () => (data ? mapRecentStaff(data.recentStaff) : []),
@@ -156,8 +153,10 @@ export function useAdminDashboard(token: string | null) {
     stats,
     schedules,
     recentActivities,
+    recentStaffPageInfo: data?.recentStaff,
+    setRecentStaffPage,
     isLoading,
     error,
-    refetch,
+    refetch: loadDashboard,
   }
 }

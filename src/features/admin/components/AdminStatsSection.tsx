@@ -2,39 +2,39 @@ import AdminStatCard from "./AdminStatCard"
 import type { AdminStatCardProps } from "../types/dashboard.types"
 
 interface AdminStatsSectionProps {
- stats: AdminStatCardProps[]
- isLoading?: boolean
+  stats: AdminStatCardProps[]
+  isLoading?: boolean
 }
 
 export default function AdminStatsSection({
- stats,
- isLoading = false,
+  stats,
+  isLoading = false,
 }: AdminStatsSectionProps) {
- if (isLoading) {
- return (
- <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
- {Array.from({ length: 4 }).map((_, index) => (
- <div
- key={index}
- className="h-32 animate-pulse rounded-lg border border-border bg-muted"
- />
- ))}
- </section>
- )
- }
+  if (isLoading) {
+    return (
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={index}
+            className="h-24 animate-pulse rounded-lg border border-border bg-muted"
+          />
+        ))}
+      </section>
+    )
+  }
 
- return (
- <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
- {stats.map((stat) => (
- <AdminStatCard
- key={stat.title}
- title={stat.title}
- value={stat.value}
- change={stat.change}
- subtitle={stat.subtitle}
- trend={stat.trend}
- />
- ))}
- </section>
- )
+  return (
+    <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      {stats.map((stat) => (
+        <AdminStatCard
+          key={stat.title}
+          title={stat.title}
+          value={stat.value}
+          change={stat.change}
+          subtitle={stat.subtitle}
+          trend={stat.trend}
+        />
+      ))}
+    </section>
+  )
 }

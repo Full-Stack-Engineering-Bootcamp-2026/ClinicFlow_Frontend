@@ -14,12 +14,11 @@ import type {
 
 const initialFilters: StaffFilters = {
   page: 0,
-  size: 10,
+  size: 5,
   search: "",
   role: "",
   status: "ALL",
 }
-
 
 export function useStaffManagement(token: string | null) {
   const [filters, setFilters] =
@@ -50,10 +49,7 @@ export function useStaffManagement(token: string | null) {
     } finally {
       setIsLoading(false)
     }
-
-
-
-}, [filters, token])
+  }, [filters, token])
 
   const fetchRoles = useCallback(async () => {
     if (!token) return
@@ -77,19 +73,15 @@ export function useStaffManagement(token: string | null) {
     fetchRoles()
   }, [fetchRoles])
 
-  const updateFilters = (
+  const updateFilters = useCallback((
     nextFilters: Partial<StaffFilters>
   ) => {
     setFilters((current) => ({
       ...current,
-
-
-
-
       ...nextFilters,
       page: nextFilters.page ?? 0,
     }))
-  }
+  }, [])
 
   const handleDeactivate = async (staffId: number) => {
     if (!token) return
