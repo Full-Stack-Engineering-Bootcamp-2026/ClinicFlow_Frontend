@@ -1,11 +1,7 @@
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-
 import { FaPhoneAlt } from "react-icons/fa"
-
-import type { RegisterPatientFormData } from "../types"
-
 import { Button } from "@/components/ui/button"
 
 import {
@@ -16,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { Controller } from "react-hook-form"
+import type { RegisterPatientFormData } from "../types"
 
 const registerPatientSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -25,7 +21,12 @@ const registerPatientSchema = z.object({
     .string()
     .regex(/^[0-9]{10}$/, "Enter a valid 10 digit mobile number"),
 
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  dateOfBirth: z
+    .string()
+    .min(1, "Date of birth is required")
+    .refine((date) => new Date(date) <= new Date(), {
+      message: "Date of birth cannot be in the future",
+    }),
 
   gender: z.string().min(1, "Gender is required"),
 
@@ -38,10 +39,13 @@ const registerPatientSchema = z.object({
 
 type RegisterPatientFormProps = {
   onSubmit: (data: RegisterPatientFormData) => void
+
+  isSubmitting?: boolean
 }
 
 export default function RegisterPatientForm({
   onSubmit,
+  isSubmitting = false,
 }: RegisterPatientFormProps) {
   const {
     register,
@@ -51,6 +55,16 @@ export default function RegisterPatientForm({
     formState: { errors },
   } = useForm<RegisterPatientFormData>({
     resolver: zodResolver(registerPatientSchema),
+
+    defaultValues: {
+      fullName: "",
+      mobileNumber: "",
+      dateOfBirth: "",
+      gender: "",
+      bloodGroup: "",
+      address: "",
+      medicalNotes: "",
+    },
   })
 
   return (
@@ -122,7 +136,10 @@ export default function RegisterPatientForm({
             control={control}
             name="gender"
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value || undefined}
+              >
                 <SelectTrigger className="w-full bg-background">
                   <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>
@@ -150,7 +167,10 @@ export default function RegisterPatientForm({
             control={control}
             name="bloodGroup"
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value || undefined}
+              >
                 <SelectTrigger className="w-full bg-background">
                   <SelectValue placeholder="Select Blood Group" />
                 </SelectTrigger>
@@ -217,12 +237,17 @@ export default function RegisterPatientForm({
           variant="outline"
           onClick={() => reset()}
           className="cursor-pointer"
+          disabled={isSubmitting}
         >
           Clear Form
         </Button>
 
-        <Button type="submit" className="cursor-pointer">
-          Register Patient
+        <Button
+          type="submit"
+          className="cursor-pointer max-w-40"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Registering..." : "Register Patient"}
         </Button>
       </div>
     </form>

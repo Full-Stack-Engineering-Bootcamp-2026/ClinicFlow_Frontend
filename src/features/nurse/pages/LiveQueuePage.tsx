@@ -1,226 +1,51 @@
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { Users, Clock3, Stethoscope, TriangleAlert, Plus } from "lucide-react"
+import type { RootState } from "@/app/store"
+import { Button } from "@/components/ui/button"
 import DoctorQueueCard from "../components/DoctorQueueCard"
 import QueueStatCard from "../components/QueueStatCard"
-
-import { Users, Clock3, Stethoscope, TriangleAlert } from "lucide-react"
-
-import { useNavigate } from "react-router-dom"
-
-import { Button } from "@/components/ui/button"
-
-import { Plus } from "lucide-react"
+import { getLiveQueueApi } from "../services/nurseApi"
+import type { LiveQueueResponse } from "../types"
 
 function LiveQueuePage() {
   const navigate = useNavigate()
-  const liveQueueData = {
-    stats: {
-      totalWaitingPatients: 2,
-      activeDoctors: 1,
-      urgentCases: 0,
-      averageWaitTime: 18,
-    },
 
-    doctorQueues: [
-      {
-        doctorId: 1,
-
-        doctorName: "Dr Rishi",
-
-        specialization: "Cardiology",
-
-        queueState: "ACTIVE",
-
-        servingNow: null,
-
-        nextUp: null,
-
-        lastServed: null,
-
-        waitingCount: 5,
-
-        waitingPatients: [
-          {
-            appointmentId: 1,
-
-            queueNumber: 1,
-
-            patientName: "Rohan Sharma",
-
-            mobile: "9876543210",
-
-            status: "IN_PROGRESS",
-          },
-
-          {
-            appointmentId: 2,
-
-            queueNumber: 2,
-
-            patientName: "Shrishti Patil",
-
-            mobile: "9876547896",
-
-            status: "WAITING",
-          },
-
-          {
-            appointmentId: 3,
-
-            queueNumber: 3,
-
-            patientName: "Rahul Verma",
-
-            mobile: "9876541111",
-
-            status: "WAITING",
-          },
-
-          {
-            appointmentId: 4,
-
-            queueNumber: 4,
-
-            patientName: "Sneha Kulkarni",
-
-            mobile: "9876512345",
-
-            status: "WAITING",
-          },
-
-          {
-            appointmentId: 5,
-
-            queueNumber: 5,
-
-            patientName: "Aman Gupta",
-
-            mobile: "9876509876",
-
-            status: "WAITING",
-          },
-        ],
-      },
-
-      {
-        doctorId: 2,
-
-        doctorName: "Dr Sarah Wilson",
-
-        specialization: "Dermatology",
-
-        queueState: "BREAK",
-
-        servingNow: null,
-
-        nextUp: null,
-
-        lastServed: null,
-
-        waitingCount: 2,
-
-        waitingPatients: [
-          {
-            appointmentId: 6,
-
-            queueNumber: 11,
-
-            patientName: "Neha Joshi",
-
-            mobile: "9988776655",
-
-            status: "WAITING",
-          },
-
-          {
-            appointmentId: 7,
-
-            queueNumber: 12,
-
-            patientName: "Karan Mehta",
-
-            mobile: "9988771122",
-
-            status: "WAITING",
-          },
-        ],
-      },
-
-      {
-        doctorId: 3,
-
-        doctorName: "Dr Michael Lee",
-
-        specialization: "Neurology",
-
-        queueState: "YET_TO_START",
-
-        servingNow: null,
-
-        nextUp: null,
-
-        lastServed: null,
-
-        waitingCount: 0,
-
-        waitingPatients: [],
-      },
-
-      {
-        doctorId: 4,
-
-        doctorName: "Dr Emily Carter",
-
-        specialization: "Pediatrics",
-
-        queueState: "ACTIVE",
-
-        servingNow: null,
-
-        nextUp: null,
-
-        lastServed: null,
-
-        waitingCount: 3,
-
-        waitingPatients: [
-          {
-            appointmentId: 8,
-
-            queueNumber: 21,
-
-            patientName: "Aryan Singh",
-
-            mobile: "9123456789",
-
-            status: "IN_PROGRESS",
-          },
-
-          {
-            appointmentId: 9,
-
-            queueNumber: 22,
-
-            patientName: "Priya Nair",
-
-            mobile: "9000011111",
-
-            status: "WAITING",
-          },
-
-          {
-            appointmentId: 10,
-
-            queueNumber: 23,
-
-            patientName: "Tanvi Shah",
-
-            mobile: "9555512345",
-
-            status: "WAITING",
-          },
-        ],
-      },
-    ],
+  const token = useSelector((state: RootState) => state.auth.token)
+
+  const [queueData, setQueueData] = useState<LiveQueueResponse | null>(null)
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchLiveQueue = async () => {
+      try {
+        setIsLoading(true)
+
+        const data = await getLiveQueueApi(token!)
+
+        setQueueData(data)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (token) {
+      fetchLiveQueue()
+    }
+  }, [token])
+
+  if (isLoading) {
+    return (
+      <div className="flex h-100 items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading live queue...</p>
+      </div>
+    )
   }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -240,10 +65,11 @@ function LiveQueuePage() {
           Book New Appointment
         </Button>
       </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <QueueStatCard
           title="Total Waiting"
-          value={liveQueueData.stats.totalWaitingPatients}
+          value={queueData?.stats.totalWaitingPatients || 0}
           subtitle="Patients"
           icon={Users}
           iconBgColor="#dbeafe"
@@ -252,7 +78,7 @@ function LiveQueuePage() {
 
         <QueueStatCard
           title="Avg. Wait Time"
-          value={liveQueueData.stats.averageWaitTime}
+          value={queueData?.stats.averageWaitTime || 0}
           subtitle="Mins"
           icon={Clock3}
           iconBgColor="#dcfce7"
@@ -261,7 +87,7 @@ function LiveQueuePage() {
 
         <QueueStatCard
           title="Active Doctors"
-          value={liveQueueData.stats.activeDoctors}
+          value={queueData?.stats.activeDoctors || 0}
           subtitle="On-duty"
           icon={Stethoscope}
           iconBgColor="#fef3c7"
@@ -270,7 +96,7 @@ function LiveQueuePage() {
 
         <QueueStatCard
           title="Urgent Cases"
-          value={liveQueueData.stats.urgentCases}
+          value={queueData?.stats.urgentCases || 0}
           subtitle="Pending"
           icon={TriangleAlert}
           iconBgColor="#fee2e2"
@@ -279,7 +105,7 @@ function LiveQueuePage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {liveQueueData.doctorQueues.map((queue) => (
+        {queueData?.doctorQueues.map((queue) => (
           <DoctorQueueCard key={queue.doctorId} queue={queue} />
         ))}
       </div>
