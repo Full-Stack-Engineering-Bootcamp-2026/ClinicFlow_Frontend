@@ -1,234 +1,152 @@
-import { useMemo, useState } from "react"
-import SetScheduleDialog from "../components/SetScheduleDialog"
-import {
-  CalendarDays,
-  Download,
-} from "lucide-react"
-import type { LeaveException } from "../types/schedule.types"
-import { Button } from "@/components/ui/button"
+import { useSelector } from "react-redux"
+import { CalendarDays } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+import type { RootState } from "@/app/store"
+import SetScheduleDialog from "../components/SetScheduleDialog"
 import ScheduleFilters from "../components/ScheduleFilters"
 import ScheduleTable from "../components/ScheduleTable"
+import { useDoctorSchedules } from "../hooks/useDoctorSchedule"
 
-import { doctorSchedules as initialSchedules } from "../mock/schedule.mock"
+const statCards = [
+  {
+    key: "activeClinicians",
+    label: "Active Clinicians",
+  },
+  {
+    key: "queueCapacityToday",
+    label: "Queue Capacity Today",
+  },
+  {
+    key: "onLeaveThisWeek",
+    label: "On Leave This Week",
+  },
+] as const
 
 export default function ManageSchedulePage() {
-    const [doctorSchedules, setDoctorSchedules] =
-  useState(initialSchedules)
-
-  const handleApplyLeave = (
-  doctorName: string,
-  leave: LeaveException
-) => {
-  setDoctorSchedules((prev) =>
-    prev.map((schedule) => {
-      // derive weekday from selected leave date
-      const leaveDay =
-        new Date(
-          leave.exceptionDate
-        )
-          .toLocaleDateString("en-US", {
-            weekday: "short",
-          })
-          .toUpperCase()
-          .slice(0, 3)
-
-      // apply leave only to matching weekday row
-      if (
-        schedule.doctorName ===
-          doctorName &&
-        schedule.dayOfWeek === leaveDay
-      ) {
-        return {
-          ...schedule,
-
-          leaveExceptions: [
-            ...schedule.leaveExceptions,
-            leave,
-          ],
-        }
-      }
-
-      return schedule
-    })
-  )
-}
-  const [
-    selectedSpecialization,
-    setSelectedSpecialization,
-  ] = useState("")
-
-  const [
-    selectedStatus,
-    setSelectedStatus,
-  ] = useState("Working")
-
-  const [currentPage, setCurrentPage] =
-    useState(1)
-
-  const itemsPerPage = 2
-
-  const filteredSchedules = useMemo(() => {
-    let filtered = doctorSchedules
-
-    if (selectedSpecialization) {
-      filtered = filtered.filter(
-        (doctor) =>
-          doctor.specialization ===
-          selectedSpecialization
-      )
-    }
-
-    return filtered
-  }, [selectedSpecialization])
-
-  // PAGINATION
-  const totalPages = Math.ceil(
-    filteredSchedules.length / itemsPerPage
-  )
-
-  const paginatedSchedules =
-    filteredSchedules.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    )
+  const token = useSelector((state: RootState) => state.auth.token)
+  const {
+    filters,
+    updateFilters,
+    schedules,
+    allDoctors,
+    schedulePage,
+    stats,
+    specializations,
+    isLoading,
+    isSaving,
+    error,
+    changeSchedule,
+    applyLeave,
+  } = useDoctorSchedules(token)
 
   return (
-    <div className="space-y-8 p-6">
-      {/* HEADER */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div className="space-y-4 p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm text-muted-foreground">
             Admin / Doctor Schedules
           </p>
 
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-xl font-bold tracking-tight">
             Doctor Schedules
           </h1>
         </div>
 
         <SetScheduleDialog
-  schedules={doctorSchedules}
-  onApplyLeave={handleApplyLeave}
-/>
+          doctors={allDoctors}
+          isSaving={isSaving}
+          onChangeSchedule={changeSchedule}
+          trigger={
+            <Button>
+              <CalendarDays />
+              Set Schedule
+            </Button>
+          }
+        />
       </div>
 
-      {/* STATS */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Active Clinicians
-          </p>
+      <div className="grid gap-3 md:grid-cols-3">
+        {statCards.map((card) => (
+          <div
+            key={card.key}
+            className="rounded-lg border border-border bg-card p-3 shadow-sm"
+          >
+            <p className="text-xs uppercase text-muted-foreground">
+              {card.label}
+            </p>
 
-          <div className="mt-3 flex items-center gap-3">
-            <h2 className="text-4xl font-bold">
-              24
+            <h2 className="mt-2 text-2xl font-bold">
+              {stats?.[card.key] ?? 0}
             </h2>
-
-            <span className="rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-              +2
-            </span>
           </div>
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Queue Capacity Today
-          </p>
-
-          <h2 className="mt-3 text-4xl font-bold">
-            320
-          </h2>
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            On Leave This Week
-          </p>
-
-          <div className="mt-3 flex items-center gap-3">
-            <h2 className="text-4xl font-bold">
-              3
-            </h2>
-
-            <span className="rounded-md bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-600">
-              Upcoming
-            </span>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* TABLE SECTION */}
-      <div className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="space-y-4 rounded-lg border border-border bg-card p-4 shadow-sm">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <ScheduleFilters
-            selectedSpecialization={
-              selectedSpecialization
+            specializations={specializations}
+            selectedSpecialization={filters.specialization}
+            selectedStatus={filters.status}
+            onSpecializationChange={(specialization) =>
+              updateFilters({ specialization })
             }
-            selectedStatus={selectedStatus}
-            onSpecializationChange={
-              setSelectedSpecialization
-            }
-            onStatusChange={
-              setSelectedStatus
+            onStatusChange={(status) =>
+              updateFilters({ status })
             }
           />
-
-          <Button
-            variant="ghost"
-            size="icon"
-          >
-            <Download className="h-5 w-5" />
-          </Button>
         </div>
+
+        {error && (
+          <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
 
         <ScheduleTable
-  schedules={paginatedSchedules}
-  currentPage={currentPage}
-  totalPages={totalPages}
-  onPageChange={setCurrentPage}
-  onApplyLeave={handleApplyLeave}
-/>
-      </div>
+          schedules={schedules}
+          isLoading={isLoading}
+          isSaving={isSaving}
+          onApplyLeave={applyLeave}
+        />
 
-      {/* LOWER CARDS */}
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <div className="rounded-2xl bg-primary p-8 text-primary-foreground shadow-sm">
-          <h2 className="text-3xl font-bold">
-            Automated Optimization
-          </h2>
+        {schedulePage && schedulePage.totalPages > 1 && (
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground">
+              Page {schedulePage.number + 1} of {schedulePage.totalPages}
+            </p>
 
-          <p className="mt-4 max-w-lg text-primary-foreground/80">
-            Queue availability automatically adjusts
-            based on real-time check-ins and doctor
-            speed averages.
-          </p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={schedulePage.number === 0 || isLoading}
+                onClick={() =>
+                  updateFilters({ page: schedulePage.number - 1 })
+                }
+              >
+                Previous
+              </Button>
 
-          <div className="mt-8 flex gap-4">
-            <Button variant="secondary">
-              Review Analytics
-            </Button>
-
-            <Button variant="outline">
-              Learn More
-            </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={
+                  schedulePage.number + 1 >= schedulePage.totalPages ||
+                  isLoading
+                }
+                onClick={() =>
+                  updateFilters({ page: schedulePage.number + 1 })
+                }
+              >
+                Next
+              </Button>
+            </div>
           </div>
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h3 className="text-xl font-semibold">
-            Queue Alerts
-          </h3>
-
-          <p className="mt-4 text-muted-foreground">
-            No critical overlaps detected for the
-            upcoming 7 days.
-          </p>
-
-          <div className="mt-6 rounded-lg bg-muted p-3 text-sm font-medium text-primary">
-            Status: Optimized
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )

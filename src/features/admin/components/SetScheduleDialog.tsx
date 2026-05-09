@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react"
 
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
@@ -7,213 +9,202 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-
-import { Button } from "@/components/ui/button"
-
-import { Input } from "@/components/ui/input"
-
-import type { DoctorSchedule, LeaveException } from "../types/schedule.types"
+import type {
+  AdminDoctorScheduleRow,
+  ChangeDoctorScheduleRequest,
+} from "../types/schedule.types"
 
 interface SetScheduleDialogProps {
-  schedules: DoctorSchedule[]
-
-  onApplyLeave: (doctorName: string, leave: LeaveException) => void
-
-  // OPTIONAL
-  preselectedDoctorName?: string
-
-  hideSearch?: boolean
-
+  doctors: AdminDoctorScheduleRow[]
   trigger?: React.ReactNode
+  isSaving?: boolean
+  onChangeSchedule: (
+    payload: ChangeDoctorScheduleRequest
+  ) => Promise<void>
 }
 
 export default function SetScheduleDialog({
-  schedules,
-  onApplyLeave,
-  preselectedDoctorName,
-  hideSearch = false,
+  doctors,
   trigger,
+  isSaving = false,
+  onChangeSchedule,
 }: SetScheduleDialogProps) {
+  const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
-
-  const [selectedDoctor, setSelectedDoctor] = useState(
-    preselectedDoctorName || ""
-  )
-
-  const [exceptionDate, setExceptionDate] = useState("")
-
+  const [selectedDoctorId, setSelectedDoctorId] = useState<number | null>(null)
+  const [date, setDate] = useState("")
+  const [dates, setDates] = useState<string[]>([])
   const [reason, setReason] = useState("")
 
-  // UNIQUE DOCTORS
-  const doctors = useMemo(() => {
-    return Array.from(new Set(schedules.map((schedule) => schedule.doctorName)))
-  }, [schedules])
-
-  // FILTERED DOCTORS
-  const filteredDoctors = doctors.filter((doctor) =>
-    doctor.toLowerCase().includes(search.toLowerCase())
+  const selectedDoctor = doctors.find(
+    (doctor) => doctor.doctorId === selectedDoctorId
   )
 
-  // CURRENT DOCTOR WEEKLY SCHEDULE
-  const currentDoctorSchedules = schedules.filter(
-    (schedule) => schedule.doctorName === selectedDoctor
+  const filteredDoctors = useMemo(
+    () =>
+      doctors.filter((doctor) =>
+        doctor.doctorName.toLowerCase().includes(search.toLowerCase())
+      ),
+    [doctors, search]
   )
 
-  const handleApply = () => {
-    if (!selectedDoctor || !exceptionDate) {
-      return
-    }
+  const addDate = () => {
+    if (!date || dates.includes(date)) return
 
-    onApplyLeave(selectedDoctor, {
-      id: Date.now(),
+    setDates((current) => [...current, date].sort())
+    setDate("")
+  }
 
-      doctorScheduleId: 0,
-
-      exceptionDate,
-
-      reason,
-    })
-
+  const reset = () => {
     setSearch("")
-    setSelectedDoctor("")
-    setExceptionDate("")
+    setSelectedDoctorId(null)
+    setDate("")
+    setDates([])
     setReason("")
   }
 
+  const handleSubmit = async () => {
+    if (!selectedDoctor || dates.length === 0) return
+
+    await onChangeSchedule({
+      doctorId: selectedDoctor.doctorId,
+      dates,
+      startTime: "09:00",
+      endTime: "17:00",
+      maxAppointments: 20,
+      reason: reason.trim() || undefined,
+    })
+
+    reset()
+    setOpen(false)
+  }
+
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen)
+        if (!nextOpen) reset()
+      }}
+    >
       <DialogTrigger asChild>
-        {trigger || <Button className="gap-2">Set Schedule</Button>}
+        {trigger || <Button>Set Schedule</Button>}
       </DialogTrigger>
 
-      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Apply Doctor Leave</DialogTitle>
+          <DialogTitle>Change Doctor Schedule</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 pt-2">
-          {!hideSearch && (
-  <>
-    {/* SEARCH */}
-    <div className="space-y-2">
-      <label className="text-sm font-medium">
-        Search Doctor
-      </label>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Search Doctor</label>
+            <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search doctor by name"
+            />
+          </div>
 
-      <Input
-        placeholder="Search doctor name..."
-        value={search}
-        onChange={(e) =>
-          setSearch(
-            e.target.value
-          )
-        }
-      />
-    </div>
-
-    {/* SEARCH RESULTS */}
-    {search && (
-      <div className="max-h-40 overflow-y-auto rounded-lg border border-border">
-        {filteredDoctors.map(
-          (doctor) => (
-            <button
-              key={doctor}
-              type="button"
-              onClick={() => {
-                setSelectedDoctor(
-                  doctor
-                )
-
-                setSearch("")
-              }}
-              className="w-full border-b border-border px-4 py-3 text-left text-sm transition-colors last:border-0 hover:bg-muted"
-            >
-              {doctor}
-            </button>
-          )
-        )}
-      </div>
-    )}
-  </>
-)}
-
-          {/* DOCTOR SCHEDULE */}
-          {selectedDoctor && (
-            <div className="space-y-4 rounded-xl border border-border p-4">
-              <div>
-                <p className="font-semibold">{selectedDoctor}</p>
-
-                <p className="text-sm text-muted-foreground">
-                  Weekly recurring schedule
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {currentDoctorSchedules.map((schedule) => (
-                  <div
-                    key={schedule.id}
-                    className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3"
-                  >
-                    <p className="text-sm font-semibold text-primary">
-                      {schedule.dayOfWeek}
-                    </p>
-
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {schedule.startTime} - {schedule.endTime}
-                    </p>
-                  </div>
-                ))}
-              </div>
+          {search && (
+            <div className="max-h-40 overflow-y-auto rounded-md border border-border">
+              {filteredDoctors.map((doctor) => (
+                <button
+                  key={doctor.doctorId}
+                  type="button"
+                  onClick={() => {
+                    setSelectedDoctorId(doctor.doctorId)
+                    setSearch("")
+                  }}
+                  className="w-full border-b border-border px-3 py-2 text-left text-sm last:border-0 hover:bg-muted"
+                >
+                  {doctor.doctorName}
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    {doctor.specialization}
+                  </span>
+                </button>
+              ))}
             </div>
           )}
 
-          {/* DATE */}
           {selectedDoctor && (
-            <div className="space-y-5 rounded-xl border border-border p-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Leave Date</label>
+            <div className="rounded-lg border border-border p-3">
+              <p className="font-medium">{selectedDoctor.doctorName}</p>
+              <p className="text-sm text-muted-foreground">
+                Current working days:{" "}
+                {selectedDoctor.workingDays.length > 0
+                  ? selectedDoctor.workingDays.join(", ")
+                  : "No active schedule"}
+              </p>
+            </div>
+          )}
 
+          {selectedDoctor && (
+            <div className="space-y-4 rounded-lg border border-border p-3">
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
                 <input
                   type="date"
-                  value={exceptionDate}
-                  onChange={(e) => setExceptionDate(e.target.value)}
-                  className="h-10 w-full rounded-md border border-input bg-background px-3"
+                  value={date}
+                  onChange={(event) => setDate(event.target.value)}
+                  className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!date}
+                  onClick={addDate}
+                >
+                  Add Date
+                </Button>
               </div>
+
+              {dates.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {dates.map((selectedDate) => (
+                    <button
+                      key={selectedDate}
+                      type="button"
+                      onClick={() =>
+                        setDates((current) =>
+                          current.filter((item) => item !== selectedDate)
+                        )
+                      }
+                      className="rounded-md bg-primary/10 px-2 py-1 text-xs text-primary"
+                    >
+                      {selectedDate}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Reason</label>
-
                 <textarea
-                  rows={4}
+                  rows={3}
                   value={reason}
-                  onChange={(e) => setReason(e.target.value)}
+                  onChange={(event) => setReason(event.target.value)}
                   className="w-full rounded-md border border-input bg-background p-3 text-sm"
-                  placeholder="Doctor personal leave"
+                  placeholder="Schedule change reason"
                 />
               </div>
             </div>
           )}
 
-          {/* FOOTER */}
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-2">
             <Button
+              type="button"
               variant="outline"
-              onClick={() => {
-                setSearch("")
-                setSelectedDoctor("")
-                setExceptionDate("")
-                setReason("")
-              }}
+              disabled={isSaving}
+              onClick={() => setOpen(false)}
             >
               Cancel
             </Button>
-
             <Button
-              disabled={!selectedDoctor || !exceptionDate}
-              onClick={handleApply}
+              type="button"
+              disabled={!selectedDoctor || dates.length === 0 || isSaving}
+              onClick={handleSubmit}
             >
-              Apply Leave
+              {isSaving ? "Changing..." : "Change Schedule"}
             </Button>
           </div>
         </div>
