@@ -4,6 +4,8 @@ import CurrentServingCard from "../component/queue/CurrentServingCard";
 import WaitingPatientsTable from "../component/queue/WaitingPatientsTable";
 import { getQueueDashboard } from "../services/queue.service";
 import type { QueueDashboardResponse } from "../types/queue.types";
+import CompletedConsultationsCard
+  from "../component/queue/CompletedConsultationsCard";
 
 const QueuePage = () => {
   const [dashboardData, setDashboardData] = useState<QueueDashboardResponse | null>(null);
@@ -43,6 +45,9 @@ const QueuePage = () => {
         <CurrentServingCard currentPatient={dashboardData.currentPatient} />
 
         <WaitingPatientsTable patients={dashboardData.waitingPatients} />
+        
+        <CompletedConsultationsCard consultations={dashboardData.completedConsultations}
+/>
       </div>
     </div>
   );

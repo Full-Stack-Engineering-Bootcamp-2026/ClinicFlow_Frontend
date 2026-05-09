@@ -24,9 +24,15 @@ export interface WaitingPatient {
 }
 
 export interface QueueDashboardResponse {
+
   stats: QueueStats;
+
   currentPatient: CurrentPatient | null;
+
   waitingPatients: WaitingPatient[];
+
+  completedConsultations:
+    CompletedConsultation[];
 }
 
 export interface CallNextRequest {
@@ -36,4 +42,19 @@ export interface CallNextRequest {
 export interface CallNextResponse {
   message: string;
   appointmentId: number;
+}
+
+export interface CompletedConsultation {
+
+  consultationId: number;
+
+  appointmentId: number;
+
+  queueNumber: number;
+
+  patientName: string;
+
+  completedAt: string;
+
+  diagnosis: string;
 }
