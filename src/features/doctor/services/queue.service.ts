@@ -15,7 +15,7 @@ export const getQueueDashboard =
         "/doctor/queue/dashboard"
       );
 
-    return response.data;
+    return response.data.data;
 };
 
 
@@ -30,5 +30,5 @@ export const callNextPatient =
         payload
       );
 
-    return response.data;
+    return response.data.data;
 };
