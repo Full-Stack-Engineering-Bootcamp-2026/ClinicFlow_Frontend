@@ -13,9 +13,17 @@ import PatientSummaryCard
 import VisitHistoryTable
   from "../component/history/VisitHistoryTable";
 
+import VisitDetailsCard
+  from "../component/history/VisitDetailsCard";
+
 import {
+  getConsultationHistoryDetails,
   getPatientHistory,
 } from "../services/patient-history.service";
+
+import type {
+  ConsultationHistoryDetailsResponse,
+} from "../types/consultation-api.types";
 
 import type {
   PatientHistoryResponse,
@@ -34,19 +42,30 @@ const PatientHistoryPage = () => {
   >(null);
 
   const [
+    selectedDetails,
+    setSelectedDetails,
+  ] = useState<
+    ConsultationHistoryDetailsResponse | null
+  >(null);
+
+  const [
     loading,
     setLoading,
   ] = useState(true);
+
+  const [
+    detailsLoading,
+    setDetailsLoading,
+  ] = useState(false);
 
   const [
     error,
     setError,
   ] = useState("");
 
-
   useEffect(() => {
 
-    const fetchPatientHistory =
+    const fetchHistory =
       async () => {
 
         try {
@@ -59,6 +78,16 @@ const PatientHistoryPage = () => {
             );
 
           setHistoryData(data);
+
+          if (
+            data.visitHistory.length > 0
+          ) {
+
+            fetchVisitDetails(
+              data.visitHistory[0]
+                .consultationId
+            );
+          }
 
         } catch (error: any) {
 
@@ -80,11 +109,37 @@ const PatientHistoryPage = () => {
       };
 
     if (patientId) {
-      fetchPatientHistory();
+      fetchHistory();
     }
 
   }, [patientId]);
+  const fetchVisitDetails =
+    async (
+      consultationId: number
+    ) => {
 
+      try {
+
+        const data =
+          await getConsultationHistoryDetails(
+            consultationId
+          );
+
+        setSelectedDetails(data);
+
+      } catch (error: any) {
+
+        console.error(
+          "Visit Details Error:",
+          error?.response?.data ||
+          error.message
+        );
+
+      } finally {
+
+        setDetailsLoading(false);
+      }
+    };
   if (loading) {
 
     return (
@@ -98,20 +153,20 @@ const PatientHistoryPage = () => {
 
     return (
       <div className="p-6 text-red-500">
+
         {error}
+
       </div>
     );
   }
-
   return (
 
     <div className="min-h-screen bg-background">
 
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6">
-
         <div className="space-y-1">
 
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold tracking-tight">
 
             Patient History
 
@@ -123,13 +178,24 @@ const PatientHistoryPage = () => {
 
           </p>
         </div>
-
         <PatientSummaryCard
           patient={historyData.patient}
         />
-
         <VisitHistoryTable
-          visits={historyData.visitHistory}
+          visits={
+            historyData.visitHistory
+          }
+          onViewDetails={
+            fetchVisitDetails
+          }
+        />
+
+
+
+        {/* VISIT DETAILS */}
+        <VisitDetailsCard
+          details={selectedDetails}
+          loading={detailsLoading}
         />
 
       </div>

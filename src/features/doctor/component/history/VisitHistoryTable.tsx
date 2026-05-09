@@ -1,115 +1,70 @@
-import {
-  useNavigate,
-} from "react-router-dom";
-
-import type {
-  VisitHistory,
-} from "../../types/patient-history.types";
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-import {
-  Button,
-} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { VisitHistory } from "../../types/patient-history.types";
 
 interface VisitHistoryTableProps {
-
   visits: VisitHistory[];
+  onViewDetails: (consultationId: number) => void;
 }
 
-
-
-const VisitHistoryTable = ({
-  visits,
-}: VisitHistoryTableProps) => {
-
-  const navigate = useNavigate();
-
-
+const VisitHistoryTable = ({ visits, onViewDetails }: VisitHistoryTableProps) => {
   return (
-
-    <Card>
-
+    <Card className="border border-border">
       <CardHeader>
-
-        <CardTitle>
-          Visit History
-        </CardTitle>
-
+        <CardTitle>Complete Visit History</CardTitle>
       </CardHeader>
 
-
-      <CardContent className="space-y-4">
-
+      <CardContent className="overflow-x-auto">
         {visits.length === 0 ? (
-
-          <div className="py-8 text-center text-muted-foreground">
-
-            No consultation history found
-
+          <div className="py-10 text-center text-sm text-muted-foreground">
+            No visit history found
           </div>
-
         ) : (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-border text-left">
+                <th className="pb-4 text-sm font-medium text-muted-foreground">Date</th>
+                <th className="pb-4 text-sm font-medium text-muted-foreground">Diagnosis</th>
+                <th className="pb-4 text-sm font-medium text-muted-foreground">Clinician</th>
+                <th className="pb-4 text-sm font-medium text-muted-foreground">Status</th>
+                <th className="pb-4 text-right text-sm font-medium text-muted-foreground">Action</th>
+              </tr>
+            </thead>
 
-          visits.map((visit) => (
+            <tbody>
+              {visits.map((visit) => (
+                <tr key={visit.consultationId} className="border-b border-border last:border-none">
+                  <td className="py-5 text-sm">
+                    {visit.appointmentDate}
+                  </td>
 
-            <div
-              key={visit.consultationId}
-              className="flex flex-col gap-4 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between"
-            >
+                  <td className="py-5 text-sm font-medium">
+                    {visit.diagnosis}
+                  </td>
 
-           
-              <div className="space-y-1">
+                  <td className="py-5 text-sm text-muted-foreground">
+                    {visit.doctorName}
+                  </td>
 
-                <h3 className="font-semibold">
+                  <td className="py-5">
+                    <div className="w-fit rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                      {visit.status}
+                    </div>
+                  </td>
 
-                  {visit.diagnosis}
-
-                </h3>
-
-                <p className="text-sm text-muted-foreground">
-
-                  {visit.appointmentDate}
-
-                </p>
-
-                <p className="text-sm text-muted-foreground">
-
-                  {visit.doctorName}
-
-                </p>
-
-              </div>
-
-
-              <div className="flex items-center gap-4">
-
-                <span className="text-sm font-medium">
-
-                  {visit.status}
-
-                </span>
-
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    navigate(
-                      `/doctor/patients/consultations/${visit.consultationId}`
-                    )
-                  }
-                >
-                  View Details
-                </Button>
-
-              </div>
-
-            </div>
-          ))
+                  <td className="py-5 text-right">
+                    <Button
+                      variant="ghost"
+                      className="text-primary hover:text-primary"
+                      onClick={() => onViewDetails(visit.consultationId)}
+                    >
+                      View Detail
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </CardContent>
     </Card>
