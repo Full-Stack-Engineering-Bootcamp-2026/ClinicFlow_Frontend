@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { getMyProfile, updateProfile, uploadProfilePhoto } from "../../services/profileService"
-import type { Profile } from "../../types/profile"
-import type { ProfileFormData } from "../../types/profileSchema"
+import { getMyProfile, updateProfile, uploadProfilePhoto } from "../services/profileService"
+import type { Profile } from "../types/profile"
+import type { ProfileFormData } from "../types/profileSchema"
 
 export const useProfile = () => {
   const [profile, setProfile] = useState<Profile | null>(null)

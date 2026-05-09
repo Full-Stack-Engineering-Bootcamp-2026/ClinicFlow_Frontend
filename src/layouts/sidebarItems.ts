@@ -59,7 +59,7 @@ export const sidebarItems = {
   DOCTOR: [
     {
       title: "Live Queue",
-      path: "/live-queue",
+      path: "/doctor/queue",
       icon: Calendar,
     },
   ],
