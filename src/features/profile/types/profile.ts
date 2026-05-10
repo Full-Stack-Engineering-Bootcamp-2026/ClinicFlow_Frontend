@@ -4,10 +4,10 @@ export interface Profile {
   email: string
   phoneNumber: string
   role: string
-  department: string
-  specialization: string
-  createdAt: string
+  officialRole: string;
+  specialization: string;
   profileImage?: string
+  createdAt: string;
 }
 
 export interface UpdateProfileRequest {

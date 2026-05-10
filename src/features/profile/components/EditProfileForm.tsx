@@ -13,7 +13,7 @@ interface Props {
 }
 
 const EditProfileForm = ({ profile, isEditing, onSave, onCancel }: Props) => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ProfileFormData>({
+  const { register,setValue, handleSubmit, reset, formState: { errors } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: profile.name,
@@ -50,11 +50,6 @@ const EditProfileForm = ({ profile, isEditing, onSave, onCancel }: Props) => {
           <div>
             <label className="block text-sm font-medium mb-2 text-foreground">Role</label>
             <input type="text" value={profile.role} disabled className="w-full border rounded-lg px-4 py-2 bg-muted" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-foreground">Department</label>
-            <input type="text" value={profile.department} disabled className="w-full border rounded-lg px-4 py-2 bg-muted" />
           </div>
 
           <div>

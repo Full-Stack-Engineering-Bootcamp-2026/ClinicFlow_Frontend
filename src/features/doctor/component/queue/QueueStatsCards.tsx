@@ -10,6 +10,12 @@ import type {
 interface QueueStatsCardsProps {
   stats: QueueStats;
 }
+import {
+  Clock3,
+  Activity,
+  CheckCircle2,
+  CalendarDays,
+} from "lucide-react";
 
 const QueueStatsCards = ({
   stats,
@@ -37,11 +43,11 @@ const QueueStatsCards = ({
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 xl:h-24 ">
       {cards.map((card) => (
-        <Card key={card.title}>
-          <CardContent className="space-y-2 p-5">
-            <p className="text-sm text-muted-foreground">
+        <Card className="" key={card.title}>
+          <CardContent className=" p-5 py-1">
+            <p className="text-sm text-muted-foreground ">
               {card.title}
             </p>
 

@@ -2,8 +2,11 @@ import { Camera } from "lucide-react"
 import type { Profile } from "../types/profile"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
-import type{ AppDispatch } from "@/app/store"
+import type { AppDispatch } from "@/app/store"
 import { logout } from "@/features/auth/authSlice"
+import { Badge } from "@/components/ui/badge"
+import { CiLock } from "react-icons/ci";
+
 
 interface Props {
   profile: Profile
@@ -15,16 +18,25 @@ interface Props {
 }
 
 const ProfileCard = ({ profile, isEditing, selectedImagePreview, onEdit, onResetPassword, onImageChange }: Props) => {
-  const joinedDate = new Date(profile.createdAt).toLocaleDateString("en-US", {
-    year: "numeric", month: "short", day: "numeric",
-  })
-  const navigate = useNavigate()
-  const dispatch=useDispatch<AppDispatch>()
 
-  const handleReset=()=>{
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
+
+  const handleReset = () => {
     dispatch(logout())
     navigate("/forgot-password")
   }
+  const joinedDate =
+    new Date(
+      profile.createdAt
+    ).toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        year: "numeric",
+      }
+    )
 
 
   return (
@@ -48,12 +60,32 @@ const ProfileCard = ({ profile, isEditing, selectedImagePreview, onEdit, onReset
 
         <div>
           <h2 className="text-2xl font-semibold text-foreground">{profile.name}</h2>
-          <p className="text-sm text-primary mt-1 font-medium">{profile.role}</p>
-          <p className="text-sm text-muted-foreground">{profile.department}</p>
-          <div className="flex items-center gap-2 mt-3">
-            <span className="bg-primary/10 text-primary text-xs px-3 py-1 rounded-full font-medium">Active</span>
-            <span className="bg-muted text-muted-foreground text-xs px-3 py-1 rounded-full">Joined {joinedDate}</span>
+          <p className="text-sm text-primary mt-2 font-medium">
+            {profile.officialRole}
+
+            <span className="mx-2 text-muted-foreground">
+              •
+            </span>
+
+            <span className="text-muted-foreground">
+              {profile.specialization}
+            </span>
+          </p>
+
+          <div className="flex items-center gap-2 mt-4 flex-wrap">
+
+            <Badge
+              className="bg-primary/10 text-primary hover:bg-primary/10"
+            >
+              {profile.role}
+            </Badge>
+
+            <Badge variant="outline">
+              Joined {joinedDate}
+            </Badge>
+
           </div>
+
         </div>
       </div>
 
