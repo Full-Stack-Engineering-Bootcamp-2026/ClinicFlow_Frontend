@@ -1,57 +1,33 @@
+import { apiRequest } from "@/lib/api"
 import type {
-  ApiResponse,
   DashboardSummaryResponse,
   DoctorScheduleDashboardResponse,
   StaffPageResponse,
 } from "../types/dashboard.types"
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080"
+export function getDashboardSummary(token: string) {
+  return apiRequest<DashboardSummaryResponse>("/admin/dashboard/summary", {
+    token,
+  })
+}
 
-async function apiGet<T>(
-  path: string,
-  token: string
-): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+export function getDoctorScheduleDashboard(token: string, startDate: string) {
+  const params = new URLSearchParams({ startDate })
+
+  return apiRequest<DoctorScheduleDashboardResponse[]>(
+    `/admin/dashboard/doctor-schedule?${params.toString()}`,
+    { token }
+  )
+}
+
+export function getRecentStaff(token: string, page = 0, size = 5) {
+  const params = new URLSearchParams({
+    page: String(page),
+    size: String(size),
   })
 
-  const result = (await response
-    .json()
-    .catch(() => null)) as ApiResponse<T> | null
-
-  if (!response.ok || !result?.success) {
-    throw new Error(result?.message || "Request failed")
-  }
-
-  return result.data
-}
-
-export function getDashboardSummary(token: string) {
-  return apiGet<DashboardSummaryResponse>(
-    "/admin/dashboard/summary",
-    token
-  )
-}
-
-export function getDoctorScheduleDashboard(
-  token: string,
-  startDate: string
-) {
-  return apiGet<DoctorScheduleDashboardResponse[]>(
-    `/admin/dashboard/doctor-schedule?startDate=${startDate}`,
-    token
-  )
-}
-
-export function getRecentStaff (token: string) {
-  
-  return apiGet<StaffPageResponse>(
-    "/admin/staff?page=0&size=3",
-    token
+  return apiRequest<StaffPageResponse>(
+    `/admin/dashboard/recent-staff?${params.toString()}`,
+    { token }
   )
 }

@@ -1,12 +1,9 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 //import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import AdminPagination from "./AdminPagination"
 
-import type {
-  StaffActivity,
-  StaffPageResponse,
-} from "../types/dashboard.types"
+import type { StaffActivity, StaffPageResponse } from "../types/dashboard.types"
 
 // const statusVariant = {
 //   Verified: "default",
@@ -38,7 +35,7 @@ export default function RecentStaffActivity({
         </CardTitle>
 
         <span className="text-xs text-muted-foreground">
-          5 per page
+          {pageInfo?.size ?? 5} per page
         </span>
       </CardHeader>
 
@@ -77,10 +74,7 @@ export default function RecentStaffActivity({
 
               {!isLoading &&
                 activities.map((activity) => (
-                  <tr
-                    key={activity.id}
-                    className="border-b last:border-0"
-                  >
+                  <tr key={activity.id} className="border-b last:border-0">
                     <td className="py-2 pr-3">
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
@@ -112,35 +106,12 @@ export default function RecentStaffActivity({
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-xs text-muted-foreground">
-              Page {currentPage + 1} of {totalPages}
-            </span>
-
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={currentPage === 0}
-                onClick={() => onPageChange?.(currentPage - 1)}
-              >
-                Previous
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={currentPage + 1 >= totalPages}
-                onClick={() => onPageChange?.(currentPage + 1)}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
+        <AdminPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          isLoading={isLoading}
+          onPageChange={(page) => onPageChange?.(page)}
+        />
       </CardContent>
     </Card>
   )

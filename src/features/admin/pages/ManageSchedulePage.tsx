@@ -3,6 +3,7 @@ import { CalendarDays } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import type { RootState } from "@/app/store"
+import AdminPagination from "../components/AdminPagination"
 import SetScheduleDialog from "../components/SetScheduleDialog"
 import ScheduleFilters from "../components/ScheduleFilters"
 import ScheduleTable from "../components/ScheduleTable"
@@ -43,16 +44,6 @@ export default function ManageSchedulePage() {
   return (
     <div className="space-y-4 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            Admin / Doctor Schedules
-          </p>
-
-          <h1 className="text-xl font-bold tracking-tight">
-            Doctor Schedules
-          </h1>
-        </div>
-
         <SetScheduleDialog
           doctors={allDoctors}
           isSaving={isSaving}
@@ -72,13 +63,11 @@ export default function ManageSchedulePage() {
             key={card.key}
             className="rounded-lg border border-border bg-card p-3 shadow-sm"
           >
-            <p className="text-xs uppercase text-muted-foreground">
+            <p className="text-xs text-muted-foreground uppercase">
               {card.label}
             </p>
 
-            <h2 className="mt-2 text-2xl font-bold">
-              {stats?.[card.key] ?? 0}
-            </h2>
+            <p className="mt-2 text-2xl font-bold">{stats?.[card.key] ?? 0}</p>
           </div>
         ))}
       </div>
@@ -92,9 +81,7 @@ export default function ManageSchedulePage() {
             onSpecializationChange={(specialization) =>
               updateFilters({ specialization })
             }
-            onStatusChange={(status) =>
-              updateFilters({ status })
-            }
+            onStatusChange={(status) => updateFilters({ status })}
           />
         </div>
 
@@ -111,41 +98,13 @@ export default function ManageSchedulePage() {
           onApplyLeave={applyLeave}
         />
 
-        {schedulePage && schedulePage.totalPages > 1 && (
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-muted-foreground">
-              Page {schedulePage.number + 1} of {schedulePage.totalPages}
-            </p>
-
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={schedulePage.number === 0 || isLoading}
-                onClick={() =>
-                  updateFilters({ page: schedulePage.number - 1 })
-                }
-              >
-                Previous
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={
-                  schedulePage.number + 1 >= schedulePage.totalPages ||
-                  isLoading
-                }
-                onClick={() =>
-                  updateFilters({ page: schedulePage.number + 1 })
-                }
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+        {schedulePage && (
+          <AdminPagination
+            currentPage={schedulePage.number}
+            totalPages={schedulePage.totalPages}
+            isLoading={isLoading}
+            onPageChange={(page) => updateFilters({ page })}
+          />
         )}
       </div>
     </div>

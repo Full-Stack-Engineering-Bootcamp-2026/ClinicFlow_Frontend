@@ -21,12 +21,12 @@ export default function DoctorSchedule({
         <span className="text-sm text-primary">This Week</span>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="admin-scrollbar max-h-[300px] space-y-2 overflow-y-auto pr-2">
         {isLoading &&
           Array.from({ length: 7 }).map((_, index) => (
             <div
               key={index}
-              className="h-14 animate-pulse rounded-lg border border-border bg-muted"
+              className="h-11 animate-pulse rounded-lg border border-border bg-muted"
             />
           ))}
 
@@ -36,44 +36,43 @@ export default function DoctorSchedule({
           </p>
         )}
 
-        {!isLoading && schedules.map((schedule) => (
-          <div
-  key={schedule.id}
-  className="flex items-center justify-between rounded-lg border border-border p-2.5"
->
-  <div className="flex gap-3">
-    <div className="flex h-10 w-10 flex-col items-center justify-center rounded-md bg-muted">
-      <span className="text-[10px] text-muted-foreground">
-        {schedule.day}
-      </span>
+        {!isLoading &&
+          schedules.map((schedule) => (
+            <div
+              key={schedule.id}
+              className="flex items-center justify-between rounded-lg border border-primary/15 bg-primary/5 p-2 transition-colors hover:bg-primary/10"
+            >
+              <div className="flex min-w-0 gap-3">
+                <div className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <span className="text-[10px] font-medium">
+                    {schedule.day}
+                  </span>
 
-      <span className="text-sm font-semibold">
-        {schedule.date}
-      </span>
-    </div>
+                  <span className="text-sm font-semibold">{schedule.date}</span>
+                </div>
 
-    <div>
-      <p className="text-sm font-medium text-foreground">
-        {schedule.title}
-      </p>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {schedule.title}
+                  </p>
 
-      <p className="text-xs text-muted-foreground">
-        {schedule.doctors} Doctors
-      </p>
-    </div>
-  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {schedule.doctors} Doctors
+                  </p>
+                </div>
+              </div>
 
-  <div className="text-right">
-    <p className="text-sm font-semibold">
-      {schedule.appointments}
-    </p>
+              <div className="shrink-0 text-right">
+                <p className="text-sm font-semibold text-primary">
+                  {schedule.appointments}
+                </p>
 
-    <p className="text-[11px] text-muted-foreground">
-      Appointments
-    </p>
-  </div>
-</div>
-        ))}
+                <p className="text-[11px] text-muted-foreground">
+                  Appointments
+                </p>
+              </div>
+            </div>
+          ))}
 
         {/* <div className="rounded-xl bg-primary/10 p-4">
           <p className="font-medium text-primary">
