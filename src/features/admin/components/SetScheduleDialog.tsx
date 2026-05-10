@@ -39,6 +39,14 @@ export default function SetScheduleDialog({
   isSaving = false,
   onChangeSchedule,
 }: SetScheduleDialogProps) {
+  const today = useMemo(() => {
+    const currentDate = new Date()
+    const year = currentDate.getFullYear()
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0")
+    const day = String(currentDate.getDate()).padStart(2, "0")
+
+    return `${year}-${month}-${day}`
+  }, [])
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [selectedDoctorId, setSelectedDoctorId] = useState<number | null>(null)
@@ -77,7 +85,7 @@ export default function SetScheduleDialog({
   }, [selectedDoctor])
 
   const addDate = () => {
-    if (!date || dates.includes(date)) return
+    if (!date || date < today || dates.includes(date)) return
 
     setDates((current) => [...current, date].sort())
     setDate("")
@@ -115,7 +123,7 @@ export default function SetScheduleDialog({
       })
       .sort()
 
-    setDates(nextDates)
+    setDates(nextDates.filter((nextDate) => nextDate >= today))
   }
 
   const reset = () => {
@@ -133,6 +141,7 @@ export default function SetScheduleDialog({
     if (
       !selectedDoctor ||
       dates.length === 0 ||
+      dates.some((selectedDate) => selectedDate < today) ||
       !Number.isInteger(parsedMaxAppointments) ||
       parsedMaxAppointments < 1
     ) {
@@ -248,6 +257,7 @@ export default function SetScheduleDialog({
               <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
                 <input
                   type="date"
+                  min={today}
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
                   className="h-9 rounded-md border border-input bg-background px-3 text-sm"
@@ -255,7 +265,7 @@ export default function SetScheduleDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  disabled={!date}
+                  disabled={!date || date < today}
                   onClick={addDate}
                 >
                   Add Date
@@ -317,6 +327,7 @@ export default function SetScheduleDialog({
               disabled={
                 !selectedDoctor ||
                 dates.length === 0 ||
+                dates.some((selectedDate) => selectedDate < today) ||
                 !maxAppointments ||
                 Number(maxAppointments) < 1 ||
                 isSaving
