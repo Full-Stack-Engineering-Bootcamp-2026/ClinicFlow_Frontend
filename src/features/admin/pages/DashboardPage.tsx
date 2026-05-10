@@ -49,11 +49,6 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* <div className="grid gap-6 lg:grid-cols-[2fr_1fr_1fr]">
-        <GrowthAnalyticsCard />
-        <ApiIntegrationCard />
-        <SecurityCard />
-      </div> */}
     </div>
   )
 }
