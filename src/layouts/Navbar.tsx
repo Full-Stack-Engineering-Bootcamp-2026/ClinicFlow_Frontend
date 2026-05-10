@@ -31,7 +31,15 @@ export function Navbar() {
     "/profile": "Profile",
   }
 
-  const currentPageTitle = pageTitles[location.pathname] || "ClinicFlow"
+  let currentPageTitle = "ClinicFlow"
+
+  if (location.pathname.startsWith("/doctor/consultation")) {
+    currentPageTitle = "Consultation"
+  } else if (location.pathname.includes("/history")) {
+    currentPageTitle = "Patient History"
+  } else {
+    currentPageTitle = pageTitles[location.pathname] || "ClinicFlow"
+  }
 
   const handleProfileClick = () => {
     navigate("/profile")

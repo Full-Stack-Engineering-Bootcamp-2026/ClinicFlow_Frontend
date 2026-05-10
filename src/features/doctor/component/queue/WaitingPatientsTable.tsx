@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useNavigate } from "react-router-dom"
 import { callNextPatient } from "../../services/queue.service"
 import {
   Table,
@@ -14,17 +13,25 @@ import type { WaitingPatient } from "../../types/queue.types"
 import { toast } from "sonner"
 interface WaitingPatientsTableProps {
   patients: WaitingPatient[]
+  onPatientCalled: () => Promise<void>
 }
 
-const WaitingPatientsTable = ({ patients }: WaitingPatientsTableProps) => {
-  const navigate = useNavigate()
-
+const WaitingPatientsTable = ({
+  patients,
+  onPatientCalled,
+}: WaitingPatientsTableProps) => {
   const handleCallNext = async (appointmentId: number) => {
     try {
-      await callNextPatient({ appointmentId })
-      navigate(`/doctor/consultation/${appointmentId}`)
+      await callNextPatient({
+        appointmentId,
+      })
+
+      await onPatientCalled()
+
+      toast.success("Patient moved to current consultation")
     } catch (error: any) {
       console.error("Call Next Error:", error?.response?.data || error.message)
+
       toast.error(
         error?.response?.data?.message || "Failed to call next patient"
       )

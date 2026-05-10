@@ -78,7 +78,10 @@ const QueuePage = () => {
 
         <CurrentServingCard currentPatient={dashboardData.currentPatient} />
 
-        <WaitingPatientsTable patients={dashboardData.waitingPatients} />
+        <WaitingPatientsTable
+          patients={dashboardData.waitingPatients}
+          onPatientCalled={fetchDashboard}
+        />
 
         <CompletedConsultationsCard
           consultations={dashboardData.completedConsultations}
