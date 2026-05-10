@@ -93,12 +93,12 @@ const ProfileCard = ({
         >
           Edit Profile
         </button>
-        <button
+        {/* <button
           onClick={handleReset}
           className="px-5 py-2.5 text-sm font-medium transition border rounded-lg border-primary text-primary hover:bg-primary/10"
         >
           Reset Password
-        </button>
+        </button> */}
       </div>
     </div>
   );

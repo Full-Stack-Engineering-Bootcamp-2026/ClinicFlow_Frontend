@@ -52,7 +52,17 @@ const EditProfileForm = ({ profile, isEditing, onSave, onCancel }: Props) => {
             <input type="text" value={profile.role} disabled className="w-full border rounded-lg px-4 py-2 bg-muted" />
           </div>
 
-          
+          <div>
+            <label className="block text-sm font-medium mb-2 text-foreground">Specialization</label>
+            <select disabled={!isEditing} {...register("specialization")} className="w-full border rounded-lg px-4 py-2 bg-background disabled:bg-muted focus:outline-none focus:ring-2 focus:ring-primary">
+              <option value="">Select Specialization</option>
+              <option value="Orthopedic Surgery">Orthopedic Surgery</option>
+              <option value="Neurology">Neurology</option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Dermatology">Dermatology</option>
+            </select>
+            {errors.specialization && <p className="text-destructive text-sm mt-1">{errors.specialization.message}</p>}
+          </div>
         </div>
 
         {isEditing && (
