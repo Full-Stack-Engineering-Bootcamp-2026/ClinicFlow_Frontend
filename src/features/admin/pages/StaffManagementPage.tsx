@@ -4,9 +4,18 @@ import { Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { RootState } from "@/app/store"
+import { useDebounce } from "../hooks/use-debounce"
 
 import AddStaffDialog from "../components/AddStaffDialog"
+import AdminPagination from "../components/AdminPagination"
 import StaffTable from "../components/StaffTable"
 import { useStaffManagement } from "../hooks/useStaffManagement"
 
@@ -24,96 +33,81 @@ export default function StaffManagementPage() {
     refetchStaff,
     deactivateStaff,
   } = useStaffManagement(token)
-  const [searchText, setSearchText] =
-    useState(filters.search)
+  const [searchText, setSearchText] = useState(filters.search)
+  const debouncedSearchText = useDebounce(searchText)
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      updateFilters({ search: searchText })
-    }, 350)
-
-    return () => window.clearTimeout(timeout)
-  }, [searchText, updateFilters])
+    updateFilters({ search: debouncedSearchText })
+  }, [debouncedSearchText, updateFilters])
 
   return (
     <div className="space-y-4 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold">
-            Staff Management
-          </h1>
-
-          <p className="text-sm text-muted-foreground">
-            Manage clinical staff, roles and access.
-          </p>
-        </div>
-
         <AddStaffDialog
           onStaffCreated={refetchStaff}
-          trigger={
-            <Button>
-              Add Staff
-            </Button>
-          }
+          trigger={<Button>Add Staff</Button>}
         />
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_160px]">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_160px] lg:items-start">
+        <div className="grid items-center gap-3 sm:grid-cols-[minmax(240px,1fr)_minmax(160px,200px)_minmax(160px,200px)]">
+          <div className="relative h-9 w-full">
+            <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={searchText}
-              onChange={(event) =>
-                setSearchText(event.target.value)
-              }
+              onChange={(event) => setSearchText(event.target.value)}
               placeholder="Search by name"
-              className="h-9 pl-9"
+              className="h-9 rounded-lg pl-9"
             />
           </div>
 
-          <select
-            value={filters.role}
-            onChange={(event) =>
-              updateFilters({ role: event.target.value })
+          <Select
+            value={filters.role || "all"}
+            onValueChange={(role) =>
+              updateFilters({ role: role === "all" ? "" : role })
             }
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
           >
-            <option value="">All Roles</option>
+            <SelectTrigger className="h-9 w-full bg-background">
+              <SelectValue placeholder="All Roles" />
+            </SelectTrigger>
 
-            {roles.map((role) => (
-              <option
-                key={role.id}
-                value={role.name}
-              >
-                {role.name}
-              </option>
-            ))}
-          </select>
+            <SelectContent>
+              <SelectItem value="all">All Roles</SelectItem>
 
-          <select
+              {roles.map((role) => (
+                <SelectItem key={role.id} value={role.name}>
+                  {role.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
             value={filters.status}
-            onChange={(event) =>
+            onValueChange={(value) =>
               updateFilters({
-                status: event.target.value as typeof filters.status,
+                status: value as typeof filters.status,
               })
             }
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
           >
-            <option value="ALL">All Status</option>
-            <option value="ACTIVE">Active</option>
-            <option value="INACTIVE">Inactive</option>
-          </select>
+            <SelectTrigger className="h-9 w-full bg-background">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="ALL">All Status</SelectItem>
+              <SelectItem value="ACTIVE">Active</SelectItem>
+              <SelectItem value="INACTIVE">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="rounded-lg bg-primary p-3 text-primary-foreground">
-          <p className="text-xs opacity-80">
-            TOTAL STAFF
-          </p>
+          <p className="text-xs opacity-80">TOTAL STAFF</p>
 
-          <h2 className="mt-1 text-2xl font-bold">
+          <p className="mt-1 text-2xl font-bold">
             {staffPage?.totalElements ?? 0}
-          </h2>
+          </p>
         </div>
       </div>
 
@@ -130,41 +124,13 @@ export default function StaffManagementPage() {
         onDeactivate={deactivateStaff}
       />
 
-      {staffPage && staffPage.totalPages > 1 && (
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-muted-foreground">
-            Page {staffPage.number + 1} of {staffPage.totalPages}
-          </p>
-
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={staffPage.number === 0 || isLoading}
-              onClick={() =>
-                updateFilters({ page: staffPage.number - 1 })
-              }
-            >
-              Previous
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={
-                staffPage.number + 1 >= staffPage.totalPages ||
-                isLoading
-              }
-              onClick={() =>
-                updateFilters({ page: staffPage.number + 1 })
-              }
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+      {staffPage && (
+        <AdminPagination
+          currentPage={staffPage.number}
+          totalPages={staffPage.totalPages}
+          isLoading={isLoading}
+          onPageChange={(page) => updateFilters({ page })}
+        />
       )}
     </div>
   )

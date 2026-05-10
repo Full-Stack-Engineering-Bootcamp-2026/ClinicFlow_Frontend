@@ -9,6 +9,14 @@ const trendStyles = {
   neutral: "bg-muted text-muted-foreground",
 }
 
+const cardAccentStyles = [
+  "border-primary/20 bg-primary/10",
+  "border-emerald-500/20 bg-emerald-500/10",
+  "border-sky-500/20 bg-sky-500/10",
+  "border-violet-500/20 bg-violet-500/10",
+  "border-rose-500/20 bg-rose-500/10",
+]
+
 export default function AdminStatCard({
   title,
   value,
@@ -16,19 +24,25 @@ export default function AdminStatCard({
   subtitle,
   trend = "neutral",
   icon,
+  accentIndex = 0,
 }: AdminStatCardProps) {
   return (
-    <Card className="border-border shadow-sm">
-      <CardContent className="flex min-h-24 flex-col gap-2 p-3">
+    <Card
+      className={cn(
+        "border shadow-sm transition-colors hover:border-primary/30 hover:bg-primary/10",
+        cardAccentStyles[accentIndex % cardAccentStyles.length]
+      )}
+    >
+      <CardContent className="flex min-h-16 flex-col gap-1.5 p-2.5">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-[11px] font-medium uppercase text-muted-foreground">
+            <p className="text-[11px] font-medium text-muted-foreground uppercase">
               {title}
             </p>
 
-            <h2 className="text-xl font-bold tracking-tight text-foreground">
+            <p className="text-xl font-bold tracking-tight text-foreground">
               {value}
-            </h2>
+            </p>
           </div>
 
           {icon && (
