@@ -1,28 +1,48 @@
-"use client";
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useSelector } from "react-redux"
 
-import { Bell, Settings } from "lucide-react";
+import type { RootState } from "@/app/store"
 
-import { useSelector } from "react-redux";
-
-import type { RootState } from "@/app/store";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"
 
 export function Navbar() {
-  const navigate = useNavigate();
-  const user = useSelector(
-    (state: RootState) => state.auth.user
-  );
+  const navigate = useNavigate()
 
-  const handleClick=()=>{
-   navigate("/profile");
+  const location = useLocation()
+
+  const user = useSelector((state: RootState) => state.auth.user)
+
+  const pageTitles: Record<string, string> = {
+    "/dashboard": "Dashboard",
+
+    "/staff-management": "Staff Management",
+
+    "/doctor-schedules": "Doctor Schedules",
+
+    "/nurse/live-queue": "Live Queue",
+
+    "/nurse/register-patient": "Register Patient",
+
+    "/nurse/book-appointment": "Book Appointment",
+
+    "/doctor/queue": "Doctor Queue",
+
+    "/profile": "Profile",
+  }
+
+  const currentPageTitle = pageTitles[location.pathname] || "ClinicFlow"
+
+  const handleProfileClick = () => {
+    navigate("/profile")
   }
 
   return (
-    <div className="h-14 flex items-center justify-between px-4 bg-card">
+    <div className="flex h-14 items-center justify-between bg-card px-4">
       <div className="flex items-center gap-3">
         <SidebarTrigger className="cursor-pointer" />
+
+        <h1 className="text-xl font-semibold">{currentPageTitle}</h1>
       </div>
 
       <div className="flex items-center gap-4">
@@ -61,7 +81,13 @@ export function Navbar() {
   "
 />
         </div>
-      </div>
+
+        <img
+          src="https://i.pravatar.cc/40"
+          alt="Profile"
+          className="h-8 w-8 rounded-full object-cover"
+        />
+      </button>
     </div>
-  );
+  )
 }
