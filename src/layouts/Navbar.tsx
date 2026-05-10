@@ -46,10 +46,20 @@ export function Navbar() {
           </div>
 
           <img
-            onClick={handleClick}
-            src="https://i.pravatar.cc/40"
-            className="h-8 w-8 rounded-full cursor-pointer"
-          />
+  onClick={handleClick}
+  src={
+    user?.profileImage
+    ||
+    "https://i.pravatar.cc/40"
+  }
+  className="
+    h-8
+    w-8
+    rounded-full
+    object-cover
+    cursor-pointer
+  "
+/>
         </div>
       </div>
     </div>
