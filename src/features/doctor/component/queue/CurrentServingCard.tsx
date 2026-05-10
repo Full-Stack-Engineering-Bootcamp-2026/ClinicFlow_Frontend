@@ -12,8 +12,8 @@ const CurrentServingCard = ({ currentPatient }: CurrentServingCardProps) => {
 
   if (!currentPatient) {
     return (
-      <Card>
-        <CardContent className="flex h-[220px] items-center justify-center">
+      <Card className="border border-border shadow-sm">
+        <CardContent className="flex h-55 items-center justify-center">
           <p className="text-sm text-muted-foreground">No patient is currently being served</p>
         </CardContent>
       </Card>
@@ -52,7 +52,7 @@ const CurrentServingCard = ({ currentPatient }: CurrentServingCardProps) => {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-            <Button onClick={handleStartConsultation} className="min-w-[220px]">Start Consultation</Button>
+            <Button onClick={handleStartConsultation} className="min-w-55 cursor-pointer">Start Consultation</Button>
           </div>
         </div>
       </CardContent>

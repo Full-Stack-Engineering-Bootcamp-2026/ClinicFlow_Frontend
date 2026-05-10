@@ -1,31 +1,42 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { callNextPatient } from "../../services/queue.service";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import type { WaitingPatient } from "../../types/queue.types";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useNavigate } from "react-router-dom"
+import { callNextPatient } from "../../services/queue.service"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import type { WaitingPatient } from "../../types/queue.types"
+import { toast } from "sonner"
 interface WaitingPatientsTableProps {
-  patients: WaitingPatient[];
+  patients: WaitingPatient[]
 }
 
 const WaitingPatientsTable = ({ patients }: WaitingPatientsTableProps) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleCallNext = async (appointmentId: number) => {
     try {
-      await callNextPatient({ appointmentId });
-      navigate(`/doctor/consultation/${appointmentId}`);
+      await callNextPatient({ appointmentId })
+      navigate(`/doctor/consultation/${appointmentId}`)
     } catch (error: any) {
-      console.error("Call Next Error:", error?.response?.data || error.message);
-      alert(error?.response?.data?.message || "Failed to call next patient");
+      console.error("Call Next Error:", error?.response?.data || error.message)
+      toast.error(
+        error?.response?.data?.message || "Failed to call next patient"
+      )
     }
-  };
+  }
 
   return (
     <Card className="border border-border shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">Upcoming Patients</CardTitle>
+        <CardTitle className="text-lg font-semibold">
+          Upcoming Patients
+        </CardTitle>
       </CardHeader>
 
       <CardContent className="p-0">
@@ -33,7 +44,7 @@ const WaitingPatientsTable = ({ patients }: WaitingPatientsTableProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[120px] pl-6">Queue</TableHead>
+                <TableHead className="w-30 pl-6">Queue</TableHead>
                 <TableHead>Patient Name</TableHead>
                 <TableHead>Gender / Age</TableHead>
                 <TableHead>Booked At</TableHead>
@@ -44,7 +55,10 @@ const WaitingPatientsTable = ({ patients }: WaitingPatientsTableProps) => {
             <TableBody>
               {patients.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="h-32 text-center text-muted-foreground"
+                  >
                     No waiting patients
                   </TableCell>
                 </TableRow>
@@ -70,7 +84,10 @@ const WaitingPatientsTable = ({ patients }: WaitingPatientsTableProps) => {
                     </TableCell>
 
                     <TableCell className="pr-6 text-right">
-                      <Button onClick={() => handleCallNext(patient.appointmentId)}>
+                      <Button
+                        onClick={() => handleCallNext(patient.appointmentId)}
+                        className="cursor-pointer"
+                      >
                         Call Next
                       </Button>
                     </TableCell>
@@ -82,7 +99,7 @@ const WaitingPatientsTable = ({ patients }: WaitingPatientsTableProps) => {
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default WaitingPatientsTable;
+export default WaitingPatientsTable
