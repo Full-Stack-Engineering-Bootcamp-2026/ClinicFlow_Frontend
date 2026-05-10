@@ -36,7 +36,7 @@ const FollowUpCard = ({ formData, setFormData }: FollowUpCardProps) => {
             id="generalInstructions"
             name="generalInstructions"
             placeholder="Enter general instructions"
-            className="min-h-[140px] resize-none"
+            className="min-h-36 resize-y"
             value={formData.generalInstructions}
             onChange={handleChange}
           />
@@ -48,7 +48,7 @@ const FollowUpCard = ({ formData, setFormData }: FollowUpCardProps) => {
             id="followUpNotes"
             name="followUpNotes"
             placeholder="Enter follow up notes"
-            className="min-h-[140px] resize-none"
+            className="min-h-36 resize-y"
             value={formData.followUpNotes}
             onChange={handleChange}
           />

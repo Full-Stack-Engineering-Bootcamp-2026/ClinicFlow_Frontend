@@ -1,39 +1,18 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 
 interface SubmitSectionProps {
-  onSubmit?: () => void;
-
-  loading?: boolean;
+  onSubmit?: () => void
+  loading?: boolean
 }
 
-const SubmitSection = ({
-  onSubmit,
-  loading = false,
-}: SubmitSectionProps) => {
-
+const SubmitSection = ({ onSubmit, loading = false }: SubmitSectionProps) => {
   return (
-    <div className="flex items-center justify-end gap-3 border-t pt-6">
-
-      <Button
-        variant="outline"
-      >
-        Save Draft
+    <div className="flex justify-end border-t pt-6">
+      <Button onClick={onSubmit} disabled={loading} className="cursor-pointer">
+        {loading ? "Submitting..." : "Submit Consultation"}
       </Button>
-
-      <Button
-        onClick={onSubmit}
-
-        disabled={loading}
-      >
-
-        {loading
-          ? "Submitting..."
-          : "Submit Consultation"}
-
-      </Button>
-
     </div>
-  );
-};
+  )
+}
 
-export default SubmitSection;
+export default SubmitSection

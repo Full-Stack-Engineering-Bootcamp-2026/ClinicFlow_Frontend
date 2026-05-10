@@ -81,7 +81,7 @@ const ProfileCard = ({
             <Badge className="bg-primary/10 text-primary hover:bg-primary/10">
               {profile.role}
             </Badge>
-            <Badge variant="outline">Joined {joinedDate}</Badge>
+            <Badge variant="outline">Joined - {joinedDate}</Badge>
           </div>
         </div>
       </div>

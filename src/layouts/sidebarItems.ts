@@ -22,7 +22,7 @@ export const sidebarItems = {
     {
       title: "Dashboard",
 
-      path: "/",
+      path: "/dashboard",
 
       icon: Home,
     },

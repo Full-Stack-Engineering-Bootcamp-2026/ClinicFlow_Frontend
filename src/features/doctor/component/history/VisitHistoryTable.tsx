@@ -1,74 +1,106 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { VisitHistory } from "../../types/patient-history.types";
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+import type { VisitHistory } from "../../types/patient-history.types"
 
 interface VisitHistoryTableProps {
-  visits: VisitHistory[];
-  onViewDetails: (consultationId: number) => void;
+  visits: VisitHistory[]
+
+  onViewDetails: (consultationId: number) => void
 }
 
-const VisitHistoryTable = ({ visits, onViewDetails }: VisitHistoryTableProps) => {
+const VisitHistoryTable = ({
+  visits,
+  onViewDetails,
+}: VisitHistoryTableProps) => {
+  const handleViewDetails = (visit: VisitHistory) => {
+    if (visit.status === "IN_PROGRESS") {
+      toast.info("Consultation is still in progress")
+
+      return
+    }
+
+    onViewDetails(visit.consultationId)
+  }
+
   return (
-    <Card className="border border-border">
+    <Card className="border border-border shadow-sm">
       <CardHeader>
         <CardTitle>Complete Visit History</CardTitle>
       </CardHeader>
 
-      <CardContent className="overflow-x-auto">
+      <CardContent className="p-0">
         {visits.length === 0 ? (
-          <div className="py-10 text-center text-sm text-muted-foreground">
+          <div className="py-8 text-center text-sm text-muted-foreground">
             No visit history found
           </div>
         ) : (
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b border-border text-left">
-                <th className="pb-4 text-sm font-medium text-muted-foreground">Date</th>
-                <th className="pb-4 text-sm font-medium text-muted-foreground">Diagnosis</th>
-                <th className="pb-4 text-sm font-medium text-muted-foreground">Clinician</th>
-                <th className="pb-4 text-sm font-medium text-muted-foreground">Status</th>
-                <th className="pb-4 text-right text-sm font-medium text-muted-foreground">Action</th>
-              </tr>
-            </thead>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="pl-6">Date</TableHead>
+                  <TableHead>Diagnosis</TableHead>
+                  <TableHead>Clinician</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="pr-6 text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
 
-            <tbody>
-              {visits.map((visit) => (
-                <tr key={visit.consultationId} className="border-b border-border last:border-none">
-                  <td className="py-5 text-sm">
-                    {visit.appointmentDate}
-                  </td>
+              <TableBody>
+                {visits.map((visit) => (
+                  <TableRow key={visit.consultationId}>
+                    <TableCell className="pl-6">
+                      {visit.appointmentDate}
+                    </TableCell>
 
-                  <td className="py-5 text-sm font-medium">
-                    {visit.diagnosis}
-                  </td>
+                    <TableCell className="font-medium">
+                      {visit.diagnosis}
+                    </TableCell>
 
-                  <td className="py-5 text-sm text-muted-foreground">
-                    {visit.doctorName}
-                  </td>
+                    <TableCell className="text-muted-foreground">
+                      {visit.doctorName}
+                    </TableCell>
 
-                  <td className="py-5">
-                    <div className="w-fit rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                      {visit.status}
-                    </div>
-                  </td>
+                    <TableCell>
+                      <div
+                        className={`w-fit rounded-md px-2.5 py-1 text-xs font-medium ${
+                          visit.status === "COMPLETED"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {visit.status}
+                      </div>
+                    </TableCell>
 
-                  <td className="py-5 text-right">
-                    <Button
-                      variant="ghost"
-                      className="text-primary hover:text-primary"
-                      onClick={() => onViewDetails(visit.consultationId)}
-                    >
-                      View Detail
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <TableCell className="pr-6 text-right">
+                      <Button
+                        variant="ghost"
+                        className="cursor-pointer text-primary hover:text-primary"
+                        onClick={() => handleViewDetails(visit)}
+                      >
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default VisitHistoryTable;
+export default VisitHistoryTable

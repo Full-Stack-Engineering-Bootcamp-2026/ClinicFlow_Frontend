@@ -1,4 +1,5 @@
 export interface Profile {
+  officialRole: ReactNode
   id: number
   name: string
   email: string
