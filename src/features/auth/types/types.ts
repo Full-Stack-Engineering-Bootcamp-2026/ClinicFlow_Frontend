@@ -1,0 +1,31 @@
+import type { ReactNode } from "react";
+
+export interface AuthLayoutProps {
+  title: string;
+  subtitle?: string;
+  pageTitle: string; 
+  children: ReactNode;
+  backTo?: string;        
+  backLabel?: string; 
+}
+
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+export type UserRole = "NURSE" | "DOCTOR" | "ADMIN";
+
+export interface AuthUser {
+  name: string;
+  email: string;
+  role: UserRole;
+  officialRole?: string;
+  profileImage?: string
+}
+
+
+export interface AuthState {
+  token: string | null;
+  user: AuthUser | null;
+}
