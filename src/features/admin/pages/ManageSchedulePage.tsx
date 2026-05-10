@@ -27,6 +27,7 @@ const statCards = [
 export default function ManageSchedulePage() {
   const token = useSelector((state: RootState) => state.auth.token)
   const {
+    weekStart,
     filters,
     updateFilters,
     schedules,
@@ -46,6 +47,7 @@ export default function ManageSchedulePage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <SetScheduleDialog
           doctors={allDoctors}
+          weekStart={weekStart}
           isSaving={isSaving}
           onChangeSchedule={changeSchedule}
           trigger={
