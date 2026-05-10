@@ -44,7 +44,7 @@ const ConsultationDetailsCard = ({ formData, setFormData }: ConsultationDetailsC
             id="clinicalNotes"
             name="clinicalNotes"
             placeholder="Enter clinical notes"
-            className="min-h-[180px] resize-none"
+            className="min-h-32 resize-none"
             value={formData.clinicalNotes}
             onChange={handleChange}
           />
