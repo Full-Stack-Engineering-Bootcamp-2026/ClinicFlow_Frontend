@@ -12,7 +12,7 @@ const API_URL =
 
 export const getMyProfile =
   async (): Promise<Profile> => {
-
+    
     const response =
       await axiosInstance.get(
         "/profile/me"
@@ -39,12 +39,26 @@ export const uploadProfilePhoto =
   async (
     file: File
   ): Promise<string> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(
-          URL.createObjectURL(file)
-        )
-      }, 1000)
-    })
 
-  }
+    const formData =
+      new FormData()
+
+    formData.append(
+      "file",
+      file
+    )
+
+    const response =
+      await axiosInstance.put(
+        "/profile/photo",
+        formData,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      )
+
+    return response.data.data
+}

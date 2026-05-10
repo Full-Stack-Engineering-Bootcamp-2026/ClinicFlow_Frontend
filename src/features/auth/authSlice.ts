@@ -7,6 +7,7 @@ interface JwtPayload {
   subject: string;
   role: "NURSE" | "DOCTOR" | "ADMIN";
   officialRole?: string;
+  profileImage?: string
 }
 
 const initialState: AuthState = {
@@ -18,6 +19,17 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    updateProfileImage: (
+  state,
+  action: PayloadAction<string>
+) => {
+
+  if (state.user) {
+
+    state.user.profileImage =
+      action.payload
+  }
+    },
     setAuth: (state, action: PayloadAction<string>) => {
       const token = action.payload;
 
@@ -33,6 +45,7 @@ const authSlice = createSlice({
         email: decoded.subject,
         role: decoded.role,
         officialRole: decoded.officialRole,
+        profileImage: decoded.profileImage,
       };
     },
 
@@ -44,5 +57,9 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuth, logout } = authSlice.actions;
+export const {
+  setAuth,
+  logout,
+  updateProfileImage
+} = authSlice.actions
 export default authSlice.reducer;

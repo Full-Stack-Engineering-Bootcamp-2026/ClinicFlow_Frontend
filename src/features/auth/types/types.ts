@@ -21,7 +21,9 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   officialRole?: string;
+  profileImage?: string
 }
+
 
 export interface AuthState {
   token: string | null;
