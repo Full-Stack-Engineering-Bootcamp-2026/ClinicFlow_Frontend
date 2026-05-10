@@ -21,9 +21,13 @@ const authSlice = createSlice({
     setAuth: (state, action: PayloadAction<string>) => {
       const token = action.payload;
 
-      const decoded = jwtDecode<JwtPayload>(token);
+      localStorage.setItem("token",token);
+
+      const decoded =
+        jwtDecode<JwtPayload>(token);
 
       state.token = token;
+
       state.user = {
         name: decoded.name,
         email: decoded.subject,
@@ -33,6 +37,7 @@ const authSlice = createSlice({
     },
 
     logout: (state) => {
+      localStorage.removeItem("token");
       state.token = null;
       state.user = null;
     },
