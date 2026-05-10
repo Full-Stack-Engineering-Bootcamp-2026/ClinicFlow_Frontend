@@ -1,4 +1,4 @@
-import axios from "axios"
+import axiosInstance from "@/lib/axios"
 
 import type {
   Profile,
@@ -8,57 +8,31 @@ import type {
 const API_URL =
   "http://localhost:8080/api/profile"
 
-const mockProfile: Profile = {
-  id: 1,
-  name: "Dr. Sarah Jenkins",
-  email: "doctor@gmail.com",
-  phoneNumber: "9876543210",
-  role: "Chief Surgeon",
-  department: "Surgical Sciences",
-  specialization: "Orthopedic Surgery",
-  createdAt: "2025-05-08T10:30:00",
-  profileImage:
-    "https://i.pravatar.cc/150?img=12",
-}
+
 
 export const getMyProfile =
   async (): Promise<Profile> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockProfile)
-      }, 500)
-    })
+
+    const response =
+      await axiosInstance.get(
+        "/profile/me"
+      )
+
+    return response.data.data
   }
 
 export const updateProfile = async (
   data: UpdateProfileRequest
 ): Promise<Profile> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ...mockProfile,
-        ...data,
-      })
-    }, 1000)
-  })
 
-  /*
-  REAL API
-
-  const token = localStorage.getItem("token")
-
-  const response = await axios.put(
-    `${API_URL}/me`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  )
+  const response =
+    await axiosInstance.put(
+      "/profile/me",
+      data
+    )
 
   return response.data.data
-  */
+
 }
 
 export const uploadProfilePhoto =
@@ -73,27 +47,4 @@ export const uploadProfilePhoto =
       }, 1000)
     })
 
-    /*
-    REAL API
-
-    const token = localStorage.getItem("token")
-
-    const formData = new FormData()
-
-    formData.append("file", file)
-
-    const response = await axios.put(
-      `${API_URL}/photo`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type":
-            "multipart/form-data",
-        },
-      }
-    )
-
-    return response.data.profileImage
-    */
   }
