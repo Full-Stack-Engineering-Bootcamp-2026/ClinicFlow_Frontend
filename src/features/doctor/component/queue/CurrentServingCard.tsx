@@ -27,7 +27,7 @@ const CurrentServingCard = ({ currentPatient }: CurrentServingCardProps) => {
   return (
     <Card className="border border-border shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold">Currently Serving</CardTitle>
+        <CardTitle className="text-lg font-semibold ">Currently Serving</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -53,7 +53,6 @@ const CurrentServingCard = ({ currentPatient }: CurrentServingCardProps) => {
 
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
             <Button onClick={handleStartConsultation} className="min-w-[220px]">Start Consultation</Button>
-            <Button variant="outline" className="min-w-[220px]">Hold Patient</Button>
           </div>
         </div>
       </CardContent>
