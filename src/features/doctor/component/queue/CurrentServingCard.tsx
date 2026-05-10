@@ -52,7 +52,7 @@ const CurrentServingCard = ({ currentPatient }: CurrentServingCardProps) => {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-            <Button onClick={handleStartConsultation} className="min-w-55 cursor-pointer">Start Consultation</Button>
+            <Button onClick={handleStartConsultation} className="min-w-55 cursor-pointer p-5">Start Consultation</Button>
           </div>
         </div>
       </CardContent>

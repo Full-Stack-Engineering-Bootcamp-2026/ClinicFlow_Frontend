@@ -57,7 +57,7 @@ export const router = createBrowserRouter([
   },
 
   {
-    path: "/set-password",
+    path: "/setup-password",
 
     element: (
       <UnProtectedRoute>
