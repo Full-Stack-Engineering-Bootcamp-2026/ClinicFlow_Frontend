@@ -1,7 +1,15 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useDebounce } from "../hooks/use-debounce"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Dialog,
   DialogContent,
@@ -16,6 +24,7 @@ import type {
 
 interface SetScheduleDialogProps {
   doctors: AdminDoctorScheduleRow[]
+  weekStart: string
   trigger?: React.ReactNode
   isSaving?: boolean
   onChangeSchedule: (
@@ -25,34 +34,96 @@ interface SetScheduleDialogProps {
 
 export default function SetScheduleDialog({
   doctors,
+  weekStart,
   trigger,
   isSaving = false,
   onChangeSchedule,
 }: SetScheduleDialogProps) {
+  const today = useMemo(() => {
+    const currentDate = new Date()
+    const year = currentDate.getFullYear()
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0")
+    const day = String(currentDate.getDate()).padStart(2, "0")
+
+    return `${year}-${month}-${day}`
+  }, [])
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [selectedDoctorId, setSelectedDoctorId] = useState<number | null>(null)
   const [date, setDate] = useState("")
   const [dates, setDates] = useState<string[]>([])
+  const [maxAppointments, setMaxAppointments] = useState("")
   const [reason, setReason] = useState("")
+  const debouncedSearch = useDebounce(search)
 
   const selectedDoctor = doctors.find(
     (doctor) => doctor.doctorId === selectedDoctorId
   )
 
   const filteredDoctors = useMemo(
-    () =>
-      doctors.filter((doctor) =>
-        doctor.doctorName.toLowerCase().includes(search.toLowerCase())
-      ),
-    [doctors, search]
+    () => {
+      const searchTerm = debouncedSearch.trim().toLowerCase()
+
+      if (!searchTerm) {
+        return []
+      }
+
+      return doctors.filter((doctor) =>
+        doctor.doctorName.toLowerCase().includes(debouncedSearch.toLowerCase())
+      )
+    },
+    [debouncedSearch, doctors]
   )
 
+  useEffect(() => {
+    if (!selectedDoctor) {
+      setMaxAppointments("")
+      return
+    }
+
+    setMaxAppointments(String(selectedDoctor.maxAppointments))
+  }, [selectedDoctor])
+
   const addDate = () => {
-    if (!date || dates.includes(date)) return
+    if (!date || date < today || dates.includes(date)) return
 
     setDates((current) => [...current, date].sort())
     setDate("")
+  }
+
+  const formatDate = (dateValue: Date) => {
+    const year = dateValue.getFullYear()
+    const month = String(dateValue.getMonth() + 1).padStart(2, "0")
+    const day = String(dateValue.getDate()).padStart(2, "0")
+
+    return `${year}-${month}-${day}`
+  }
+
+  const setWorkingWeekDates = () => {
+    if (!selectedDoctor) return
+
+    const weekDayIndexes: Record<string, number> = {
+      MON: 0,
+      TUE: 1,
+      WED: 2,
+      THU: 3,
+      FRI: 4,
+      SAT: 5,
+      SUN: 6,
+    }
+
+    const monday = new Date(`${weekStart}T00:00:00`)
+    const nextDates = selectedDoctor.workingDays
+      .map((day) => weekDayIndexes[day])
+      .filter((index): index is number => index !== undefined)
+      .map((index) => {
+        const nextDate = new Date(monday)
+        nextDate.setDate(monday.getDate() + index)
+        return formatDate(nextDate)
+      })
+      .sort()
+
+    setDates(nextDates.filter((nextDate) => nextDate >= today))
   }
 
   const reset = () => {
@@ -60,18 +131,29 @@ export default function SetScheduleDialog({
     setSelectedDoctorId(null)
     setDate("")
     setDates([])
+    setMaxAppointments("")
     setReason("")
   }
 
   const handleSubmit = async () => {
-    if (!selectedDoctor || dates.length === 0) return
+    const parsedMaxAppointments = Number(maxAppointments)
+
+    if (
+      !selectedDoctor ||
+      dates.length === 0 ||
+      dates.some((selectedDate) => selectedDate < today) ||
+      !Number.isInteger(parsedMaxAppointments) ||
+      parsedMaxAppointments < 1
+    ) {
+      return
+    }
 
     await onChangeSchedule({
       doctorId: selectedDoctor.doctorId,
       dates,
       startTime: "09:00",
       endTime: "17:00",
-      maxAppointments: 20,
+      maxAppointments: parsedMaxAppointments,
       reason: reason.trim() || undefined,
     })
 
@@ -103,27 +185,41 @@ export default function SetScheduleDialog({
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search doctor by name"
+              className="h-9 rounded-lg"
             />
           </div>
 
-          {search && (
-            <div className="max-h-40 overflow-y-auto rounded-md border border-border">
-              {filteredDoctors.map((doctor) => (
-                <button
-                  key={doctor.doctorId}
-                  type="button"
-                  onClick={() => {
-                    setSelectedDoctorId(doctor.doctorId)
-                    setSearch("")
-                  }}
-                  className="w-full border-b border-border px-3 py-2 text-left text-sm last:border-0 hover:bg-muted"
-                >
-                  {doctor.doctorName}
-                  <span className="ml-2 text-xs text-muted-foreground">
-                    {doctor.specialization}
-                  </span>
-                </button>
-              ))}
+          {debouncedSearch.trim() && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Select Doctor</label>
+              <Select
+                value={selectedDoctorId ? String(selectedDoctorId) : ""}
+                onValueChange={(value) => {
+                  setSelectedDoctorId(Number(value))
+                  setSearch("")
+                }}
+              >
+                <SelectTrigger className="h-9 w-full bg-background">
+                  <SelectValue placeholder="Select Doctor" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {filteredDoctors.length === 0 ? (
+                    <SelectItem value="no-doctors" disabled>
+                      No doctors found
+                    </SelectItem>
+                  ) : (
+                    filteredDoctors.map((doctor) => (
+                      <SelectItem
+                        key={doctor.doctorId}
+                        value={String(doctor.doctorId)}
+                      >
+                        {doctor.doctorName} - {doctor.specialization}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
           )}
 
@@ -141,9 +237,27 @@ export default function SetScheduleDialog({
 
           {selectedDoctor && (
             <div className="space-y-4 rounded-lg border border-border p-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Max Appointments
+                </label>
+                <Input
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={maxAppointments}
+                  onChange={(event) =>
+                    setMaxAppointments(event.target.value)
+                  }
+                  placeholder="Enter appointment capacity"
+                  className="h-9 rounded-lg"
+                />
+              </div>
+
               <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
                 <input
                   type="date"
+                  min={today}
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
                   className="h-9 rounded-md border border-input bg-background px-3 text-sm"
@@ -151,12 +265,21 @@ export default function SetScheduleDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  disabled={!date}
+                  disabled={!date || date < today}
                   onClick={addDate}
                 >
                   Add Date
                 </Button>
               </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                disabled={selectedDoctor.workingDays.length === 0}
+                onClick={setWorkingWeekDates}
+              >
+                Apply To Working Week
+              </Button>
 
               {dates.length > 0 && (
                 <div className="flex flex-wrap gap-2">
@@ -201,7 +324,14 @@ export default function SetScheduleDialog({
             </Button>
             <Button
               type="button"
-              disabled={!selectedDoctor || dates.length === 0 || isSaving}
+              disabled={
+                !selectedDoctor ||
+                dates.length === 0 ||
+                dates.some((selectedDate) => selectedDate < today) ||
+                !maxAppointments ||
+                Number(maxAppointments) < 1 ||
+                isSaving
+              }
               onClick={handleSubmit}
             >
               {isSaving ? "Changing..." : "Change Schedule"}

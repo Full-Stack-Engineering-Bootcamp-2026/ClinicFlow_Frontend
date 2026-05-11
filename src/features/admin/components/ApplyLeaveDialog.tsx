@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -26,11 +26,21 @@ export default function ApplyLeaveDialog({
   isSaving = false,
   onApplyLeave,
 }: ApplyLeaveDialogProps) {
+  const today = useMemo(() => {
+    const currentDate = new Date()
+    const year = currentDate.getFullYear()
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0")
+    const day = String(currentDate.getDate()).padStart(2, "0")
+
+    return `${year}-${month}-${day}`
+  }, [])
   const [open, setOpen] = useState(false)
   const [date, setDate] = useState("")
   const [reason, setReason] = useState("")
 
   const handleSubmit = async () => {
+    if (!date || date < today) return
+
     await onApplyLeave({
       doctorId: doctor.doctorId,
       date,
@@ -63,6 +73,7 @@ export default function ApplyLeaveDialog({
             <label className="text-sm font-medium">Leave Date</label>
             <input
               type="date"
+              min={today}
               value={date}
               onChange={(event) => setDate(event.target.value)}
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
@@ -91,7 +102,7 @@ export default function ApplyLeaveDialog({
             </Button>
             <Button
               type="button"
-              disabled={!date || isSaving}
+              disabled={!date || date < today || isSaving}
               onClick={handleSubmit}
             >
               {isSaving ? "Applying..." : "Apply Leave"}
