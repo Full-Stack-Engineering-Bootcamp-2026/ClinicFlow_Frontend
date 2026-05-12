@@ -1,44 +1,37 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { jwtDecode } from "jwt-decode";
-import type { AuthState, AuthUser } from "./types/types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import { jwtDecode } from "jwt-decode"
+import type { AuthState, AuthUser } from "./types/types"
 
 interface JwtPayload {
-  name: string;
-  subject: string;
-  role: "NURSE" | "DOCTOR" | "ADMIN";
-  officialRole?: string;
+  name: string
+  subject: string
+  role: "NURSE" | "DOCTOR" | "ADMIN"
+  officialRole?: string
   profileImage?: string
 }
 
 const initialState: AuthState = {
   token: null,
   user: null,
-};
+}
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    updateProfileImage: (
-  state,
-  action: PayloadAction<string>
-) => {
-
-  if (state.user) {
-
-    state.user.profileImage =
-      action.payload
-  }
+    updateProfileImage: (state, action: PayloadAction<string>) => {
+      if (state.user) {
+        state.user.profileImage = action.payload
+      }
     },
     setAuth: (state, action: PayloadAction<string>) => {
-      const token = action.payload;
+      const token = action.payload
 
-      localStorage.setItem("token",token);
+      localStorage.setItem("token", token)
 
-      const decoded =
-        jwtDecode<JwtPayload>(token);
+      const decoded = jwtDecode<JwtPayload>(token)
 
-      state.token = token;
+      state.token = token
 
       state.user = {
         name: decoded.name,
@@ -46,20 +39,25 @@ const authSlice = createSlice({
         role: decoded.role,
         officialRole: decoded.officialRole,
         profileImage: decoded.profileImage,
-      };
+      }
     },
 
     logout: (state) => {
-      localStorage.removeItem("token");
-      state.token = null;
-      state.user = null;
+      localStorage.removeItem("token")
+      state.token = null
+      state.user = null
+    },
+    updateUserProfile: (state, action: PayloadAction<Partial<AuthUser>>) => {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          ...action.payload,
+        }
+      }
     },
   },
-});
+})
 
-export const {
-  setAuth,
-  logout,
-  updateProfileImage
-} = authSlice.actions
-export default authSlice.reducer;
+export const { setAuth, logout, updateProfileImage, updateUserProfile } =
+  authSlice.actions
+export default authSlice.reducer

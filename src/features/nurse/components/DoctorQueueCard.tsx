@@ -125,7 +125,7 @@ export default function DoctorQueueCard({ queue }: DoctorQueueCardProps) {
             </div>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-5 h-40 overflow-y-scroll ">
             <QueueTable patients={remainingQueue} />
           </div>
         </>
